@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Ingress controller
+kubectl apply -f manifests/default-backend.yaml
+kubectl apply -f manifests/ingress-controller.yaml
