@@ -13,5 +13,5 @@ travis encrypt VAULT_PASSWORD=${VAULT_PASSWORD} --add
 echo ${VAULT_PASSWORD} | gpg \
   --passphrase-fd 0 \
   --batch --no-tty --yes \
-  --output vault.tar.enc \
+  --output vault.tar.gpg \
   --symmetric vault.tar

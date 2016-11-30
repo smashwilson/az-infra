@@ -11,6 +11,7 @@ fi
 echo ${VAULT_PASSWORD} | gpg \
   --passphrase-fd 0 \
   --batch --no-tty --yes \
-  vault.tar.enc
+  --output vault.tar \
+  vault.tar.gpg
 
 tar xf vault.tar

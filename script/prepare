@@ -16,6 +16,8 @@ if [ ! -f bin/kubectl ]; then
   rm -r kubernetes kubectl.tar.gz
   chmod +x ./kubectl
   popd
+else
+  echo "kubectl cached"
 fi
 
 if [ ! -f secrets/kube/kubectl.env ]; then
