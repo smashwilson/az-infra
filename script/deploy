@@ -8,6 +8,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source secrets/kube/kubectl.env
 export PATH=${PATH}:$(pwd)/bin
 
-# Ingress controller
-kubectl apply -f manifests/default-backend.yaml
-kubectl apply -f manifests/ingress-controller.yaml
+kubectl apply --recursive=true --filename=manifests/
