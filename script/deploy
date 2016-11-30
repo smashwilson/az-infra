@@ -6,6 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Bootstrap kubectl configuration
 source secrets/kube/kubectl.env
+export PATH=${PATH}:$(pwd)/bin
 
 # Ingress controller
 kubectl apply -f manifests/default-backend.yaml
