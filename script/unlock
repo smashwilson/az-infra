@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/../secrets"
+
+if [ -z "${VAULT_PASSWORD:-}" ]; then
+  read -p "Enter the vault password: " VAULT_PASSWORD
+fi
+
+echo ${VAULT_PASSWORD} | gpg \
+  --passphrase-fd 0 \
+  --batch --no-tty --yes \
+  vault.tar.enc
+
+tar xf vault.tar

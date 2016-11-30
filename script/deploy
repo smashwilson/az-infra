@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# Bootstrap kubectl configuration
+source secrets/kube/kubectl.env
+
 # Ingress controller
 kubectl apply -f manifests/default-backend.yaml
 kubectl apply -f manifests/ingress-controller.yaml
