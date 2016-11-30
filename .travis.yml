@@ -12,6 +12,7 @@ install: script/prepare
 script: script/test
 deploy:
   provider: script
+  skip_cleanup: true
   script: script/deploy
   on:
     branch: master
