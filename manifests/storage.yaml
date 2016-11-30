@@ -5,15 +5,11 @@ metadata:
 spec:
   ports:
   - port: 5432
-  selector:
-    storage: pg
 ---
 apiVersion: v1
 kind: Endpoints
 metadata:
   name: pg
-  labels:
-    storage: pg
 subsets:
 - addresses:
   - ip: 34.193.153.222
