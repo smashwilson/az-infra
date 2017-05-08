@@ -2,12 +2,9 @@ sudo: false
 cache:
   directories:
   - bin/
-language: ruby
-rvm:
-- 2.2
-env:
-  global:
-    secure: xcmn2YGO78VPfVDIWEMyoSdyR68EJe/30JBbfH8qih0GQ2MyRSQXO64AScV5c4PLLcZEORA098d0Pp6i6HncRXKyjhGKTVaPdSBr+IyXd3wI+iuekNSamWq3eIMywp2SQVzDPGUdltkYYIs0OEeXlDcKnNGa4yZuCsqWJQ5410+4DthOasBDD3mOEAjidy0vuYrk7PXN+geBFM8i0oaaiYBloc6GyiIzkvq0C431AZLmXZ5uI6NAnQcJV+7LE05vR6/Dh44QAbr9Qcj6pIoM6Nx8WYgJ0kbp5PNZmDNsdmiPInNJsQJuAHAd9lJ+5QRMomLypUmRJzUOV1TAJEzSg2kktruLYujKYXiBM9e8ye8hcftl9xbY1ZBfSEs9Hi/etXKYoWMlQpsGvFPQB3wZSezgQSsVMAIb1z/TkchB4wFxFX6i+yP5InRZVbDJABVfoUZUuYQYUbHHlkeeO3qJryIMozMwlUIw15xIMvPiL79aQbpqc8fIcQq4eTHomj873qbUNb0nVmTiu57y9YFytb0Cxbpy2+KWIFfqfS7rpqwtGZmjmJFlUFabv/BNaihJ/Ta0OBNmsq3BVjtfuQ6qxL1jUErExdDdeMSw9K5Pkz2IYPq1q7xXgdcnLkJ1B6X/SE6f0kI+R8JEAD4YWsr3UcpjnpXKxipEhIrWfOTkdrA=
+language: python
+python:
+- "3.6"
 install: script/prepare
 script: script/test
 deploy:
