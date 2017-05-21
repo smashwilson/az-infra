@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -euo pipefail
+
+multipull()
+{
+  local IMAGES="${1:-}"
+  local PIDS=""
+  local FAILED="false"
+
+  mkdir -p /tmp/pulls
+  for IMAGE in ${IMAGES}; do
+    local LOGNAME=$(printf "%s" ${IMAGE} | tr -c -s '[:alnum:]' '_')
+    docker pull "${IMAGE}" >/dev/null 2>/tmp/pulls/${LOGNAME}.err &
+    PIDS="${PIDS} $!"
+  done
+
+  printf "Waiting for pulls to complete: "
+
+  for PID in ${PIDS}; do
+    set +e
+    wait ${PID}
+    local STATUS=$?
+    set -e
+
+    if [ "${STATUS}" != "0" ]; then
+      printf "X"
+      FAILED="true"
+    else
+      printf "."
+    fi
+  done
+
+  if [ "${FAILED}" = "false" ]; then
+    printf " ok\n"
+    return 0
+  else
+    printf " err\n"
+    cat /tmp/pulls/*.err
+    return 1
+  fi
+}
+
+multipull quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+
+docker run \
+  --restart=unless-stopped \
+  --read-only \
+  --detach \
+  --env DATABASE_URL="{{ secrets.postgres_url }}" \
+  --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
+  --env HUBOT_MARKOV_STORAGE=postgres \
+  --env HUBOT_MARKOV_LEARN_MIN=2 \
+  --env HUBOT_MARKOV_GENERATE_MAX=100 \
+  --env DND_PUBLIC_CHANNEL="{{ pushbot.dnd_public_channel }}" \
+  --env HUBOT_AUTH_ADMIN="{{ pushbot.admins }}" \
+  --env HUBOT_BETRAY_IMMUNE="{{ pushbot.betray_immune }}" \
+  --env HUBOT_WEATHER_APIKEY="{{ secrets.darksky_apikey }}" \
+  --env HUBOT_GOOGLE_CSE_ID="{{ secrets.google_cse_id }}" \
+  --env HUBOT_GOOGLE_CSE_KEY="{{ secrets.google_cse_key }}" \
+  --name pushbot \
+  quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+
+docker inspect quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
+  --format '>> pushbot {{ .Id }} {{ 'index .Config.Labels "party.pushbot.commit"' | mustache }}\n'
