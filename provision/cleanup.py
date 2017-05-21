@@ -1,5 +1,6 @@
 import traceback
 
+from provision.connection import ec2
 from provision.output import info, success, error
 
 def rollback(context):
@@ -17,6 +18,21 @@ def rollback(context):
         except:
             had_failure = True
             error('unable to delete key pair\n{}'.format(traceback.format_exc()))
+
+    if context.instance and context.security_group:
+        try:
+            info('revoking RDS security group ingress rule')
+            rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
+            rds_security_group.revoke_ingress(
+                IpProtocol='tcp',
+                FromPort=5432,
+                ToPort=5432,
+                CidrIp='{}/32'.format(context.instance.public_ip_address),
+            )
+            info('RDS security group ingress rule revoked')
+        except:
+            had_failure = True
+            error('unable to remove RDS security group rule\n{}'.format(traceback.format_exc()))
 
     if context.instance:
         try:

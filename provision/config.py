@@ -10,6 +10,7 @@ class Config:
         self.image_id = public_ini.get('server', 'image_id')
         self.instance_type = public_ini.get('server', 'instance_type')
         self.ssh_attempts = public_ini.getint('server', 'ssh_timeout') / 10
+        self.rds_security_group_id = public_ini.get('rds', 'security_group_id')
         self.bootstrap_timeout = public_ini.getint('bootstrap', 'timeout')
         self.pushbot_branch = public_ini.get('pushbot', 'branch')
         self.pushbot_admins = public_ini.get('pushbot', 'admins')

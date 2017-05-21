@@ -86,6 +86,15 @@ def instance(context):
     context.instance.wait_until_running();
     context.instance.reload()
 
+    info('authorizing traffic to RDS security group {}'.format(context.config.rds_security_group_id))
+    rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
+    rds_security_group.authorize_ingress(
+        IpProtocol='tcp',
+        FromPort=5432,
+        ToPort=5432,
+        CidrIp='{}/32'.format(context.instance.public_ip_address),
+    )
+
     info('waiting for instance {} to listen on port 22'.format(context.instance.id))
     _wait_for_ssh(context.instance.public_ip_address, context.config.ssh_attempts)
     success('instance {} has booted and is listening at {}:22'.format(
