@@ -4,5 +4,6 @@ LABEL maintainer "Ash Wilson"
 ADD requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r /usr/src/app/requirements.txt
 ADD . /usr/src/app
+WORKDIR /usr/src/app
 
-ENTRYPOINT /usr/src/app/script/container/entrypoint.sh
+ENTRYPOINT ["/usr/src/app/script/container/entrypoint.sh"]
