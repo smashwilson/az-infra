@@ -61,5 +61,6 @@ docker run \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.branch }}
 
-docker inspect quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
-  --format '>> pushbot {{ .Id }} {{ 'index .Config.Labels "party.pushbot.commit"' | mustache }}\n'
+docker inspect \
+  --format ">> pushbot {{ '.Id' | mustache }} {{ 'index .Config.Labels \\"party.pushbot.commit\\"' | mustache }}\n" \
+  quay.io/smashwilson/pushbot:{{ pushbot.branch }}
