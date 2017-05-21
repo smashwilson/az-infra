@@ -1,3 +1,11 @@
 #!/bin/bash
+export PYTHONPATH=/usr/src/app
 
-exec python /usr/src/app/main.py
+case "${1:-}" in
+  decode)
+    exec python /usr/src/app/script/container/decode.py "${2}"
+    ;;
+  *)
+    exec python -m provision
+    ;;
+esac
