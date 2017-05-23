@@ -27,7 +27,7 @@ class Config:
 
         parser = argparse.ArgumentParser()
         parser.add_argument('-b', '--build-no', help='Override the build number')
-        options = parser.parse_args(args)
+        options = parser.parse_args(args[1:])
 
         if options.build_no:
             self.build_no = options.build_no

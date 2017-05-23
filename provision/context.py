@@ -14,5 +14,5 @@ class Context:
     def make_tags(self):
         return [
             {'Key': 'purpose', 'Value': 'pushbot'},
-            {'Key': 'build', 'Value': str(self.config.build_to)}
+            {'Key': 'build', 'Value': str(self.config.build_no)}
         ]

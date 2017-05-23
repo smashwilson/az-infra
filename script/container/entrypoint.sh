@@ -6,6 +6,6 @@ case "${1:-}" in
     exec python /usr/src/app/script/container/decode.py "${2}"
     ;;
   *)
-    exec python -m provision
+    exec python -m provision "${@}"
     ;;
 esac
