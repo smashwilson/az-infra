@@ -9,7 +9,7 @@ class Context:
         self.instance = None
 
     def make_name(self, base):
-        return base + '_' + self.config.build_no
+        return 'pushbot_' + base + '_' + self.config.build_no
 
     def make_tags(self):
         return [
