@@ -1,8 +1,8 @@
 from provision.config import Config
 
 class Context:
-    def __init__(self):
-        self.config = Config()
+    def __init__(self, args):
+        self.config = Config(args)
 
         self.key_pair = None
         self.security_group = None

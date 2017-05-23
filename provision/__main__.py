@@ -6,7 +6,7 @@ from provision.output import error
 from provision import server
 from provision import cleanup
 
-context = Context()
+context = Context(sys.argv)
 try:
     server.provision(context)
 except:

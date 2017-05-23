@@ -1,9 +1,10 @@
 import os
 import configparser
+import argparse
 
 class Config:
 
-    def __init__(self):
+    def __init__(self, args):
         public_ini = configparser.ConfigParser()
         public_ini.read('config.ini')
 
@@ -23,3 +24,10 @@ class Config:
         self.darksky_apikey = os.environ['DARKSPY_APIKEY']
         self.google_cse_id = os.environ['GOOGLE_CSE_ID']
         self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-b', '--build-no', help='Override the build number')
+        options = parser.parse_args(args)
+
+        if options.build_no:
+            self.build_no = options.build_no
