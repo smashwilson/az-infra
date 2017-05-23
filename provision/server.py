@@ -55,6 +55,7 @@ def security_group(context):
         GroupName=security_group_name,
         Description='Permit SSH access during provisioning',
     )
+    context.security_group.create_tags(Tags=context.make_tags())
     info('authorizing SSH access')
     context.security_group.authorize_ingress(
         IpProtocol='tcp',
@@ -78,7 +79,7 @@ def instance(context):
         SecurityGroups=[context.security_group.group_name],
         InstanceType=context.config.instance_type,
         TagSpecifications=[
-            {'ResourceType': 'instance', 'Tags': [{'Key': 'creation', 'Value': 'automated'}]}
+            {'ResourceType': 'instance', 'Tags': context.make_tags()}
         ]
     )[0]
 
