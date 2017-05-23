@@ -9,6 +9,7 @@ from provision import cleanup
 context = Context(sys.argv)
 try:
     server.provision(context)
+    cleanup.retire(context)
 except:
     error('provisioning error\n{}'.format(traceback.format_exc()))
     cleanup.rollback(context)
