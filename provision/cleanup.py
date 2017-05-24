@@ -70,9 +70,26 @@ def retire(context):
     pushbot_security_groups = ec2.security_groups.filter(Filters=tag_filter)
     pushbot_key_pairs = ec2.key_pairs.filter(Filters=[{'Name': 'key-name', 'Values': ['pushbot*']}])
 
+    rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
+    pushbot_rds_rules = rds_security_group.ip_permissions
+
     prior_instances = [i for i in pushbot_instances if i.id != context.instance.id]
     prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
     prior_key_pairs = [k for k in pushbot_key_pairs if k.name != context.key_pair.name]
+
+    prior_rds_rules = []
+    for r in pushbot_rds_rules:
+        ip_protocol = r['IpProtocol']
+        from_port = r['FromPort']
+        to_port = r['ToPort']
+        for ip_range in r['IpRanges']:
+            if ip_range['CidrIp'] != context.instance.public_ip_address + '/32':
+                prior_rds_rules.append({
+                    'IpProtocol': ip_protocol,
+                    'FromPort': from_port,
+                    'ToPort': to_port,
+                    'CidrIp': ip_range['CidrIp']
+                })
 
     info('deleting {} prior key pairs'.format(len(prior_key_pairs)))
     for k in prior_key_pairs:
@@ -81,6 +98,14 @@ def retire(context):
         except:
             had_failure = True
             error('unable to delete key pair\n{}'.format(traceback.format_exc()))
+
+    info('removing {} RDS security ingress rules'.format(len(prior_rds_rules)))
+    for r in prior_rds_rules:
+        try:
+            rds_security_group.revoke_ingress(**r)
+        except:
+            had_failure = True
+            error('unable to revoke RDS ingress rule\n{}'.format(traceback.format_exc()))
 
     info('terminating {} prior instances'.format(len(prior_instances)))
     for i in prior_instances:
