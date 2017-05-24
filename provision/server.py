@@ -142,10 +142,10 @@ def bootstrap(context):
     )
 
     if pipe.returncode == 0:
-        info('bootstrapping script output:\n{}'.format(outs))
+        context.accept_bootstrap_stdout(outs)
         success('bootstrapping completed successfully')
     else:
-        error('bootstrapping script result:')
+        error('bootstrapping script failure:')
         error('exit status: {}'.format(pipe.returncode))
         error('stdout:\n{}'.format(outs))
         error('stderr:\n{}'.format(errs))
