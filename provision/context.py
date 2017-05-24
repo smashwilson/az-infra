@@ -18,7 +18,8 @@ class Context:
     def make_tags(self):
         return [
             {'Key': 'purpose', 'Value': 'pushbot'},
-            {'Key': 'build', 'Value': str(self.config.build_no)}
+            {'Key': 'build', 'Value': str(self.config.build_no)},
+            {'Key': 'Name', 'Value': 'pushbot-{}'.format(self.config.build_no)}
         ]
 
     def accept_bootstrap_stdout(self, bootstrap_stdout):
