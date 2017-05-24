@@ -13,13 +13,13 @@ class Context:
         self.bootstrap_result = None
 
     def make_name(self, base):
-        return 'pushbot_' + base + '_' + self.config.build_no
+        return 'azurefire_' + base + '_' + self.config.build_no
 
     def make_tags(self):
         return [
             {'Key': 'purpose', 'Value': 'pushbot'},
             {'Key': 'build', 'Value': str(self.config.build_no)},
-            {'Key': 'Name', 'Value': 'pushbot-{}'.format(self.config.build_no)}
+            {'Key': 'Name', 'Value': 'azurefire-{}'.format(self.config.build_no)}
         ]
 
     def accept_bootstrap_stdout(self, bootstrap_stdout):

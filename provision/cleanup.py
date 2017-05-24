@@ -75,7 +75,7 @@ def retire(context):
         Filters=[{'Name': 'tag:purpose', 'Values': ['pushbot']}]
     )
     pushbot_key_pairs = ec2.key_pairs.filter(
-        Filters=[{'Name': 'key-name', 'Values': ['pushbot*']}]
+        Filters=[{'Name': 'key-name', 'Values': ['azurefire*']}]
     )
 
     rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
