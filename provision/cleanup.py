@@ -81,9 +81,20 @@ def retire(context):
     rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
     pushbot_rds_rules = rds_security_group.ip_permissions
 
-    prior_instances = [i for i in pushbot_instances if i.id != context.instance.id]
-    prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
-    prior_key_pairs = [k for k in pushbot_key_pairs if k.name != context.key_pair.name]
+    if context.instance:
+        prior_instances = [i for i in pushbot_instances if i.id != context.instance.id]
+    else:
+        prior_instances = list(pushbot_instances)
+
+    if context.security_group:
+        prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
+    else:
+        prior_security_groups = list(pushbot_security_groups)
+
+    if context.key_pair:
+        prior_key_pairs = [k for k in pushbot_key_pairs if k.name != context.key_pair.name]
+    else:
+        prior_key_pairs = list(pushbot_key_pairs)
 
     prior_rds_rules = []
     for r in pushbot_rds_rules:
@@ -91,7 +102,7 @@ def retire(context):
         from_port = r['FromPort']
         to_port = r['ToPort']
         for ip_range in r['IpRanges']:
-            if ip_range['CidrIp'] != context.instance.public_ip_address + '/32':
+            if not context.instance or ip_range['CidrIp'] != context.instance.public_ip_address + '/32':
                 prior_rds_rules.append({
                     'IpProtocol': ip_protocol,
                     'FromPort': from_port,
@@ -99,11 +110,11 @@ def retire(context):
                     'CidrIp': ip_range['CidrIp']
                 })
 
-    def plural(noun, list):
-        if len(list) == 1:
+    def plural(noun, collection):
+        if len(collection) == 1:
             return '1 ' + noun
         else:
-            return '{} {}s'.format(len(list), noun)
+            return '{} {}s'.format(len(collection), noun)
 
     info('deleting ' + plural('prior key pair', prior_key_pairs))
     for k in prior_key_pairs:

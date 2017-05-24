@@ -2,6 +2,12 @@ import os
 import configparser
 import argparse
 
+from enum import Enum
+
+class Action(Enum):
+    PROVISION = 1
+    DELETE = 2
+
 class Config:
 
     def __init__(self, args):
@@ -27,7 +33,13 @@ class Config:
 
         parser = argparse.ArgumentParser()
         parser.add_argument('-b', '--build-no', help='Override the build number')
+        parser.add_argument('-d', '--delete', action='store_true', help='Delete all pushbot resources on the account')
         options = parser.parse_args(args[1:])
 
         if options.build_no:
             self.build_no = options.build_no
+
+        if options.delete:
+            self.action = Action.DELETE
+        else:
+            self.action = Action.PROVISION
