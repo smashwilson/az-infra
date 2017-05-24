@@ -65,10 +65,18 @@ def retire(context):
 
     had_failure = False
 
-    tag_filter = [{'Name': 'tag:purpose', 'Values': ['pushbot']}]
-    pushbot_instances = ec2.instances.filter(Filters=tag_filter)
-    pushbot_security_groups = ec2.security_groups.filter(Filters=tag_filter)
-    pushbot_key_pairs = ec2.key_pairs.filter(Filters=[{'Name': 'key-name', 'Values': ['pushbot*']}])
+    pushbot_instances = ec2.instances.filter(
+        Filters=[
+            {'Name': 'tag:purpose', 'Values': ['pushbot']},
+            {'Name': 'instance-state-name', 'Values': ['pending', 'running']}
+        ]
+    )
+    pushbot_security_groups = ec2.security_groups.filter(
+        Filters=[{'Name': 'tag:purpose', 'Values': ['pushbot']}]
+    )
+    pushbot_key_pairs = ec2.key_pairs.filter(
+        Filters=[{'Name': 'key-name', 'Values': ['pushbot*']}]
+    )
 
     rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
     pushbot_rds_rules = rds_security_group.ip_permissions
