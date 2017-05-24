@@ -99,7 +99,13 @@ def retire(context):
                     'CidrIp': ip_range['CidrIp']
                 })
 
-    info('deleting {} prior key pairs'.format(len(prior_key_pairs)))
+    def plural(noun, list):
+        if len(list) == 1:
+            return '1 ' + noun
+        else:
+            return '{} {}s'.format(len(list), noun)
+
+    info('deleting ' + plural('prior key pair', prior_key_pairs))
     for k in prior_key_pairs:
         try:
             k.delete()
@@ -107,7 +113,7 @@ def retire(context):
             had_failure = True
             error('unable to delete key pair\n{}'.format(traceback.format_exc()))
 
-    info('removing {} RDS security ingress rules'.format(len(prior_rds_rules)))
+    info('revoking ' + plural('RDS security ingress rule', prior_rds_rules))
     for r in prior_rds_rules:
         try:
             rds_security_group.revoke_ingress(**r)
@@ -115,7 +121,7 @@ def retire(context):
             had_failure = True
             error('unable to revoke RDS ingress rule\n{}'.format(traceback.format_exc()))
 
-    info('terminating {} prior instances'.format(len(prior_instances)))
+    info('terminating ' + plural('prior instance', prior_instances))
     for i in prior_instances:
         try:
             i.terminate()
@@ -129,7 +135,7 @@ def retire(context):
             had_failure = True
             error('unable to wait for instance to terminate\n{}'.format(traceback.format_exc()))
 
-    info('deleting {} prior security groups'.format(len(prior_security_groups)))
+    info('deleting ' + plural('security group', prior_security_groups))
     for g in prior_security_groups:
         try:
             g.delete()
