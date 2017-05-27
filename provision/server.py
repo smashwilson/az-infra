@@ -78,6 +78,7 @@ def instance(context):
         KeyName=context.key_pair.key_name,
         SecurityGroups=[context.security_group.group_name],
         InstanceType=context.config.instance_type,
+        IamInstanceProfile={'Arn': context.config.instance_profile_arn},
         TagSpecifications=[
             {'ResourceType': 'instance', 'Tags': context.make_tags()}
         ]
