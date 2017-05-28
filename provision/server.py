@@ -4,7 +4,7 @@ import socket
 import subprocess
 
 from provision import template
-from provision.connection import ec2
+from provision.connection import ec2, elb
 from provision.output import info, success, error
 
 def provision(context):
@@ -16,6 +16,7 @@ def provision(context):
     security_group(context)
     instance(context)
     bootstrap(context)
+    register(context)
 
 def ssh_key(context):
     """
@@ -56,13 +57,14 @@ def security_group(context):
         Description='Permit SSH access during provisioning',
     )
     context.security_group.create_tags(Tags=context.make_tags())
-    info('authorizing SSH access')
-    context.security_group.authorize_ingress(
-        IpProtocol='tcp',
-        FromPort=22,
-        ToPort=22,
-        CidrIp='0.0.0.0/0',
-    )
+    info('authorizing SSH, HTTP and HTTPS access')
+    for port in [22, 80, 443]:
+        context.security_group.authorize_ingress(
+            IpProtocol='tcp',
+            FromPort=port,
+            ToPort=port,
+            CidrIp='0.0.0.0/0',
+        )
     success('security group {} created'.format(security_group_name))
 
 def instance(context):
@@ -79,6 +81,7 @@ def instance(context):
         SecurityGroups=[context.security_group.group_name],
         InstanceType=context.config.instance_type,
         IamInstanceProfile={'Arn': context.config.instance_profile_arn},
+        Placement={'AvailabilityZone': context.config.instance_az},
         TagSpecifications=[
             {'ResourceType': 'instance', 'Tags': context.make_tags()}
         ]
@@ -152,6 +155,18 @@ def bootstrap(context):
         error('stderr:\n{}'.format(errs))
 
         raise RuntimeError('bootstrapping failure')
+
+def register(context):
+    """
+    Register the new instance with the load balancer.
+    """
+
+    info('registering instance with the load balancer')
+    elb.register_instances_with_load_balancer(
+        LoadBalancerName=context.config.loadbalancer_name,
+        Instances=[{'InstanceId': context.instance.id}]
+    )
+    success('instance is receiving traffic')
 
 def _wait_for_ssh(public_ip, attempts):
     """
