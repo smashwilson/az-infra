@@ -41,7 +41,21 @@ multipull()
   fi
 }
 
-multipull quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+report_versions()
+{
+  local SERVICE_NAME=${1}
+  local SERVICE_BRANCH=${2}
+
+  docker inspect \
+    --format ">> ${SERVICE_NAME} {{ '.Id' | mustache }} {{ 'index .Config.Labels \\"party.pushbot.commit\\"' | mustache }}" \
+    quay.io/smashwilson/${SERVICE_NAME}:${SERVICE_BRANCH}
+}
+
+multipull \
+  quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+
+# Launch containers
 
 docker run \
   --restart=unless-stopped \
@@ -61,6 +75,17 @@ docker run \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.branch }}
 
-docker inspect \
-  --format ">> pushbot {{ '.Id' | mustache }} {{ 'index .Config.Labels \\"party.pushbot.commit\\"' | mustache }}" \
-  quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+docker run \
+  --restart=unless-stopped \
+  --detach \
+  --name nginx \
+  --env AWS_DEFAULT_REGION=us-east-1 \
+  --env S3_BUCKET_NAME=azurefire-tls \
+  --publish 443:443 \
+  --publish 80:80 \
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+
+# Output service versions for the Slack notification
+
+report_versions pushbot "{{ pushbot.branch }}"
+report_versions azurefire-nginx "{{ nginx.branch }}"
