@@ -36,6 +36,8 @@ class Config:
         self.google_cse_id = os.environ['GOOGLE_CSE_ID']
         self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
 
+        self.slack_webhook_url = os.environ['SLACK_WEBHOOK_URL']
+
         parser = argparse.ArgumentParser()
         parser.add_argument('-b', '--build-no', help='Override the build number')
         parser.add_argument('-d', '--delete', action='store_true', help='Delete all pushbot resources on the account')
