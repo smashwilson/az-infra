@@ -34,13 +34,15 @@ def success(context):
     })
 
 def failure(context, formatted_tb):
+    webhook_url = context.config.slack_webhook_url
+
     requests.post(webhook_url, json={
         'username': 'azurefire',
         'icon_emoji': ':rotating_light:',
         'attachments': [
             {
                 'fallback': 'azurefire infrastructure deployment failed.',
-                'color': 'bad',
+                'color': 'danger',
                 'title': 'Azurefire infrastructure deployment failed.',
                 'title_link': '',
                 'text': "Here's the stack:\n```\n{}\n```\n".format(formatted_tb),
