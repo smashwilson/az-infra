@@ -55,6 +55,36 @@ multipull \
   quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
   quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
 
+# Install a timer to automatically renew the TLS certificates.
+
+sudo cat <<EOF > /etc/systemd/system/azurefire-tls.service
+[Unit]
+Description=Re-issue TLS certificate if the current certificate will expire within a week.
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm \
+  --env EMAIL={{ letsencrypt.email }} \
+  --env LE_PRODUCTION=yes \
+  quay.io/smashwilson/azurefire-tls:{{ tls.branch }}
+EOF
+
+sudo cat <<EOF > /etc/systemd/system/azurefire-tls.timer
+[Unit]
+Description=Run azurefire-tls.service nightly
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable azurefire-tls.timer
+sudo systemctl start azurefire-tls.timer
+
 # Launch containers
 
 docker run \
