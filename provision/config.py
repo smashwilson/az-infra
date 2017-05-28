@@ -25,8 +25,8 @@ class Config:
         self.pushbot_betray_immune = public_ini.get('pushbot', 'betray_immune')
         self.pushbot_dnd_public_channel = public_ini.get('pushbot', 'betray_immune')
 
-        self.nginx_branch = public_ini.get('nginx', 'branch')
-        self.tls_branch = public_ini.get('tls', 'branch')
+        self.azurefire_nginx_branch = public_ini.get('nginx', 'branch')
+        self.azurefire_tls_branch = public_ini.get('tls', 'branch')
 
         self.build_no = os.environ.get('TRAVIS_JOB_NUMBER', '0')
         self.le_email = os.environ['LE_EMAIL']

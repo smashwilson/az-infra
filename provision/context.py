@@ -21,12 +21,26 @@ class Context:
         return [
             {'Key': 'purpose', 'Value': 'pushbot'},
             {'Key': 'build', 'Value': str(self.config.build_no)},
-            {'Key': 'Name', 'Value': 'azurefire-{}'.format(self.config.build_no)}
+            {'Key': 'Name', 'Value': self.build_name()}
         ]
 
     def accept_bootstrap_stdout(self, bootstrap_stdout):
         self.bootstrap_result = BootstrapResult()
         self.bootstrap_result.parse_from(bootstrap_stdout)
+
+    def build_name(self):
+        return 'azurefire-{}'.format(self.config.build_no)
+
+    def service_git_branch(self, service_name):
+        tag = self.service_image_tag(service_name)
+        if tag == 'latest':
+            return 'master'
+        else:
+            return tag
+
+    def service_image_tag(self, service_name):
+        normalized_name = service_name.replace('-', '_')
+        return getattr(self.config, '{}_branch'.format(normalized_name))
 
     def elapsed_time(self):
         delta = datetime.utcnow() - self.start_ts

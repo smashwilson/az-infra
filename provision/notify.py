@@ -7,10 +7,10 @@ def success(context):
     fields = []
     for (name, service) in bootstrap_result.services():
         github_url = 'https://github.com/smashwilson/{}/commit/{}'.format(name, service['git_commit'])
-        github_short = service['git_commit'][0:8]
+        github_short = context.service_git_branch(name)
 
         quay_url = 'https://quay.io/repository/smashwilson/{}/image/{}'.format(name, service['image_id'])
-        quay_short = service['image_id'][0:8]
+        quay_short = context.service_image_tag(name)
 
         fields.append({
             'title': name,
@@ -26,7 +26,7 @@ def success(context):
                 'color': 'good',
                 'title': 'Azurefire infrastructure deployed successfully.',
                 'title_link': '',
-                'text': 'Server `{}` launched and bootstrapped in *{}*.'.format(context.instance.id, context.elapsed_time()),
+                'text': 'Server `{}` launched and bootstrapped in _{}_.'.format(context.instance.id, context.elapsed_time()),
                 'mrkdwn_in': ['text'],
                 'fields': fields
             }

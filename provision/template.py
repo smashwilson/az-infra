@@ -21,10 +21,10 @@ def template_payload(config):
             'betray_immune': config.pushbot_betray_immune
         },
         'nginx': {
-            'branch': config.nginx_branch
+            'branch': config.azurefire_nginx_branch
         },
         'tls': {
-            'branch': config.tls_branch
+            'branch': config.azurefire_tls_branch
         },
         'letsencrypt': {
             'email': config.le_email
