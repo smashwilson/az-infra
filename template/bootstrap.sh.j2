@@ -87,10 +87,13 @@ sudo systemctl start azurefire-tls.timer
 
 # Launch containers
 
+docker network create hubot
+
 docker run \
   --restart=unless-stopped \
   --read-only \
   --detach \
+  --network hubot \
   --env DATABASE_URL="{{ secrets.postgres_url }}" \
   --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
   --env HUBOT_MARKOV_STORAGE=postgres \
@@ -108,6 +111,7 @@ docker run \
 docker run \
   --restart=unless-stopped \
   --detach \
+  --network hubot \
   --name nginx \
   --env AWS_DEFAULT_REGION=us-east-1 \
   --env S3_BUCKET_NAME=azurefire-tls \
