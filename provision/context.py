@@ -8,6 +8,9 @@ class Context:
         self.start_ts = datetime.utcnow()
         self.config = Config(args)
 
+        self.elb_security_group = None
+        self.elb_targets = None
+
         self.key_pair = None
         self.security_group = None
         self.instance = None
