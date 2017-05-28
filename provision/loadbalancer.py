@@ -45,9 +45,9 @@ def existing_loadbalancer(context):
         if existing:
             loadbalancer = existing[0]
             info('discovered existing load balancer {}', context.config.loadbalancer_name)
-            context.loadbalancer_targets = []
+            context.elb_targets = []
             for instance in loadbalancer['Instances']:
-                context.loadbalancer_targets.append({
+                context.elb_targets.append({
                     'InstanceId': instance['InstanceId'],
                     'IpAddr': ec2.Instance(instance['InstanceId']).public_ip_address
                 })
@@ -86,4 +86,4 @@ def create_loadbalancer(context):
     )
     success('load balancer {} created', context.config.loadbalancer_name)
 
-    context.loadbalancer_targets = []
+    context.elb_targets = []

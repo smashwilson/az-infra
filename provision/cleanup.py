@@ -86,7 +86,7 @@ def retire(context):
     else:
         prior_instances = list(pushbot_instances)
 
-    existing_targets = context.loadbalancer_targets
+    existing_targets = context.elb_targets
 
     if context.security_group:
         prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
