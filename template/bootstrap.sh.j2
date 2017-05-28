@@ -1,0 +1,126 @@
+#!/bin/bash
+
+set -euo pipefail
+
+multipull()
+{
+  local IMAGES="${1:-}"
+  local PIDS=""
+  local FAILED="false"
+
+  mkdir -p /tmp/pulls
+  for IMAGE in ${IMAGES}; do
+    local LOGNAME=$(printf "%s" ${IMAGE} | tr -c -s '[:alnum:]' '_')
+    docker pull "${IMAGE}" >/dev/null 2>/tmp/pulls/${LOGNAME}.err &
+    PIDS="${PIDS} $!"
+  done
+
+  printf "Waiting for pulls to complete: "
+
+  for PID in ${PIDS}; do
+    set +e
+    wait ${PID}
+    local STATUS=$?
+    set -e
+
+    if [ "${STATUS}" != "0" ]; then
+      printf "X"
+      FAILED="true"
+    else
+      printf "."
+    fi
+  done
+
+  if [ "${FAILED}" = "false" ]; then
+    printf " ok\n"
+    return 0
+  else
+    printf " err\n"
+    cat /tmp/pulls/*.err
+    return 1
+  fi
+}
+
+report_versions()
+{
+  local SERVICE_NAME=${1}
+  local SERVICE_BRANCH=${2}
+
+  docker inspect \
+    --format ">> ${SERVICE_NAME} {{ '.Id' | mustache }} {{ 'index .Config.Labels \\"party.pushbot.commit\\"' | mustache }}" \
+    quay.io/smashwilson/${SERVICE_NAME}:${SERVICE_BRANCH}
+}
+
+multipull \
+  quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+
+# Install a timer to automatically renew the TLS certificates.
+
+cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.service > /dev/null
+[Unit]
+Description=Re-issue TLS certificate if the current certificate will expire within a week.
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm \
+  --env EMAIL={{ letsencrypt.email }} \
+  --env LE_PRODUCTION=yes \
+  quay.io/smashwilson/azurefire-tls:{{ tls.branch }}
+EOF
+
+cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.timer > /dev/null
+[Unit]
+Description=Run azurefire-tls.service nightly
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable azurefire-tls.timer
+sudo systemctl start azurefire-tls.timer
+
+# Launch containers
+
+docker network create hubot
+
+docker run \
+  --restart=unless-stopped \
+  --read-only \
+  --detach \
+  --network hubot \
+  --env DATABASE_URL="{{ secrets.postgres_url }}" \
+  --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
+  --env HUBOT_MARKOV_STORAGE=postgres \
+  --env HUBOT_MARKOV_LEARN_MIN=2 \
+  --env HUBOT_MARKOV_GENERATE_MAX=100 \
+  --env DND_PUBLIC_CHANNEL="{{ pushbot.dnd_public_channel }}" \
+  --env HUBOT_AUTH_ADMIN="{{ pushbot.admins }}" \
+  --env HUBOT_BETRAY_IMMUNE="{{ pushbot.betray_immune }}" \
+  --env HUBOT_WEATHER_APIKEY="{{ secrets.darksky_apikey }}" \
+  --env HUBOT_GOOGLE_CSE_ID="{{ secrets.google_cse_id }}" \
+  --env HUBOT_GOOGLE_CSE_KEY="{{ secrets.google_cse_key }}" \
+  --env PRIOR_IP_ADDRESSES="{{ pushbot.prior_ip_addresses }}" \
+  --name pushbot \
+  quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+
+docker run \
+  --restart=unless-stopped \
+  --detach \
+  --network hubot \
+  --name nginx \
+  --env AWS_DEFAULT_REGION=us-east-1 \
+  --env S3_BUCKET_NAME=azurefire-tls \
+  --publish 443:443 \
+  --publish 80:80 \
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+
+# Output service versions for the Slack notification
+
+report_versions pushbot "{{ pushbot.branch }}"
+report_versions azurefire-nginx "{{ nginx.branch }}"

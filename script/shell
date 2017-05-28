@@ -1,5 +1,0 @@
-#!/bin/bash
-#
-# Launch an interactive shell on the cluster.
-
-exec kubectl run -it shell --image=alpine --command -- /bin/sh
