@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 import socket
 import subprocess
@@ -35,7 +36,8 @@ def ssh_key(context):
     subprocess.run(command, check=True)
     with open(os.path.join('secrets', 'id_rsa.pub'), 'rb') as keyfile:
         pub_key_material = keyfile.read()
-    shutil.copyfile(os.path.join('secrets', 'id_rsa'), os.path.join('out', 'id_rsa'))
+    if pathlib.Path('out').is_dir():
+        shutil.copyfile(os.path.join('secrets', 'id_rsa'), os.path.join('out', 'id_rsa'))
     success('SSH key generated')
 
     info('importing SSH key to EC2')
