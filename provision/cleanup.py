@@ -1,6 +1,6 @@
 import traceback
 
-from provision.connection import ec2
+from provision.connection import ec2, elb
 from provision.output import info, success, error
 
 def rollback(context):
@@ -86,6 +86,8 @@ def retire(context):
     else:
         prior_instances = list(pushbot_instances)
 
+    existing_targets = context.loadbalancer_targets
+
     if context.security_group:
         prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
     else:
@@ -115,6 +117,13 @@ def retire(context):
             return '1 ' + noun
         else:
             return '{} {}s'.format(len(collection), noun)
+
+    info('deregistering ' + plural('existing load balancer target', existing_targets))
+    if existing_targets:
+        elb.deregister_instances_from_load_balancer(
+            LoadBalancerName=context.config.loadbalancer_name,
+            Instances=[{'InstanceId': each['InstanceId']} for each in existing_targets]
+        )
 
     info('deleting ' + plural('prior key pair', prior_key_pairs))
     for k in prior_key_pairs:
