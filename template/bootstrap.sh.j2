@@ -75,7 +75,7 @@ cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.timer > /dev/null
 Description=Run azurefire-tls.service nightly
 
 [Timer]
-OnCalendar=*-*-* 09:00:00
+OnCalendar=*-*-* 01:00:00
 
 [Install]
 WantedBy=timers.target
