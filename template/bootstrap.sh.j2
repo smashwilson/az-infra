@@ -57,7 +57,7 @@ multipull \
 
 # Install a timer to automatically renew the TLS certificates.
 
-sudo cat <<EOF > /etc/systemd/system/azurefire-tls.service
+cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.service > /dev/null
 [Unit]
 Description=Re-issue TLS certificate if the current certificate will expire within a week.
 Requires=docker.service
@@ -70,7 +70,7 @@ ExecStart=/usr/bin/docker run --rm \
   quay.io/smashwilson/azurefire-tls:{{ tls.branch }}
 EOF
 
-sudo cat <<EOF > /etc/systemd/system/azurefire-tls.timer
+cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.timer > /dev/null
 [Unit]
 Description=Run azurefire-tls.service nightly
 
