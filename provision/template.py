@@ -20,6 +20,15 @@ def template_payload(config):
             'admins': config.pushbot_admins,
             'betray_immune': config.pushbot_betray_immune
         },
+        'nginx': {
+            'branch': config.nginx_branch
+        },
+        'tls': {
+            'branch': config.tls_branch
+        },
+        'letsencrypt': {
+            'email': config.le_email
+        },
         'secrets': {
             'postgres_url': config.postgres_url,
             'slack_token': config.slack_token,
