@@ -4,5 +4,6 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-# TODO: Validate manifest syntax with "kubectl apply --dry-run" once k8s 1.5 ships
-echo "it's all good, trust me"
+for PYSRC in provision/*.py; do
+  python -m py_compile "${PYSRC}"
+done

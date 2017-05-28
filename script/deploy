@@ -3,9 +3,6 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+export PYTHONPATH=.
 
-# Bootstrap kubectl configuration
-source secrets/kube/kubectl.env
-export PATH=${PATH}:$(pwd)/bin
-
-kubectl apply --recursive=true --filename=manifests/
+python -m provision
