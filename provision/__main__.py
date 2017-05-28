@@ -17,8 +17,8 @@ if context.config.action == Action.PROVISION:
     except:
         formatted_tb = traceback.format_exc()
         error('provisioning error\n{}'.format(formatted_tb))
-        cleanup.rollback(context)
         notify.failure(context, formatted_tb)
+        cleanup.rollback(context)
 elif context.config.action == Action.DELETE:
     try:
         cleanup.retire(context)
