@@ -36,7 +36,7 @@ class Config:
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
-        self.darksky_apikey = os.environ['DARKSPY_APIKEY']
+        self.darksky_apikey = os.environ['DARKSKY_APIKEY']
         self.google_cse_id = os.environ['GOOGLE_CSE_ID']
         self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
 
