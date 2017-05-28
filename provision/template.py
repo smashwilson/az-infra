@@ -8,37 +8,43 @@ def mustache(text):
 
     return '{{ ' + text + ' }}'
 
-def template_payload(config):
+def template_payload(context):
     """
     Construct a dict that passes selected configuration options to the Jinja template.
     """
 
+    if context.elb_targets:
+        prior_ip_addresses = ','.join(i['IpAddr'] for i in context.elb_targets)
+    else:
+        prior_ip_addresses = ''
+
     return {
         'pushbot': {
-            'branch': config.pushbot_branch,
-            'dnd_public_channel': config.pushbot_dnd_public_channel,
-            'admins': config.pushbot_admins,
-            'betray_immune': config.pushbot_betray_immune
+            'branch': context.config.pushbot_branch,
+            'dnd_public_channel': context.config.pushbot_dnd_public_channel,
+            'admins': context.config.pushbot_admins,
+            'betray_immune': context.config.pushbot_betray_immune,
+            'prior_ip_addresses': prior_ip_addresses
         },
         'nginx': {
-            'branch': config.azurefire_nginx_branch
+            'branch': context.config.azurefire_nginx_branch
         },
         'tls': {
-            'branch': config.azurefire_tls_branch
+            'branch': context.config.azurefire_tls_branch
         },
         'letsencrypt': {
-            'email': config.le_email
+            'email': context.config.le_email
         },
         'secrets': {
-            'postgres_url': config.postgres_url,
-            'slack_token': config.slack_token,
-            'darksky_apikey': config.darksky_apikey,
-            'google_cse_id': config.google_cse_id,
-            'google_cse_key': config.google_cse_key
+            'postgres_url': context.config.postgres_url,
+            'slack_token': context.config.slack_token,
+            'darksky_apikey': context.config.darksky_apikey,
+            'google_cse_id': context.config.google_cse_id,
+            'google_cse_key': context.config.google_cse_key
         }
     }
 
-def render(config, source):
+def render(context, source):
     """
     Initialize a Jinja2 environment and use it to render a template in the template/ directory.
     """
@@ -54,4 +60,4 @@ def render(config, source):
     env.filters['mustache'] = mustache
 
     template = env.get_template(source)
-    return template.render(template_payload(config))
+    return template.render(template_payload(context))

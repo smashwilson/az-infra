@@ -105,6 +105,7 @@ docker run \
   --env HUBOT_WEATHER_APIKEY="{{ secrets.darksky_apikey }}" \
   --env HUBOT_GOOGLE_CSE_ID="{{ secrets.google_cse_id }}" \
   --env HUBOT_GOOGLE_CSE_KEY="{{ secrets.google_cse_key }}" \
+  --env PRIOR_IP_ADDRESSES="{{ pushbot.prior_ip_addresses }}" \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.branch }}
 

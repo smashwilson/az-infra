@@ -123,7 +123,7 @@ def bootstrap(context):
         hostfile.write(keyscan.stdout)
 
     info('generating bootstrapping script from template')
-    script = template.render(context.config, 'bootstrap.sh.j2')
+    script = template.render(context, 'bootstrap.sh.j2')
 
     info('executing bootstrap script')
     ssh = [
