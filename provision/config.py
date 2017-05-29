@@ -32,7 +32,7 @@ class Config:
         self.azurefire_nginx_branch = public_ini.get('nginx', 'branch')
         self.azurefire_tls_branch = public_ini.get('tls', 'branch')
 
-        self.build_no = os.environ.get('TRAVIS_JOB_NUMBER', '0')
+        self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
@@ -47,8 +47,8 @@ class Config:
         parser.add_argument('-d', '--delete', action='store_true', help='Delete all pushbot resources on the account')
         options = parser.parse_args(args[1:])
 
-        if options.build_no:
-            self.build_no = options.build_no
+        if options.build_id:
+            self.build_id = options.build_id
 
         if options.delete:
             self.action = Action.DELETE

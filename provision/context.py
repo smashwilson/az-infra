@@ -18,12 +18,12 @@ class Context:
         self.bootstrap_result = None
 
     def make_name(self, base):
-        return 'azurefire_' + base + '_' + self.config.build_no
+        return 'azurefire_' + base + '_' + self.config.build_id
 
     def make_tags(self):
         return [
             {'Key': 'purpose', 'Value': 'pushbot'},
-            {'Key': 'build', 'Value': str(self.config.build_no)},
+            {'Key': 'build', 'Value': str(self.config.build_id)},
             {'Key': 'Name', 'Value': self.build_name()}
         ]
 
@@ -32,7 +32,7 @@ class Context:
         self.bootstrap_result.parse_from(bootstrap_stdout)
 
     def build_name(self):
-        return 'azurefire-{}'.format(self.config.build_no)
+        return 'azurefire-{}'.format(self.config.build_id)
 
     def service_git_branch(self, service_name):
         tag = self.service_image_tag(service_name)
