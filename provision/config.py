@@ -1,6 +1,7 @@
 import os
 import configparser
 import argparse
+import time
 
 from enum import Enum
 
@@ -32,7 +33,9 @@ class Config:
         self.azurefire_nginx_branch = public_ini.get('nginx', 'branch')
         self.azurefire_tls_branch = public_ini.get('tls', 'branch')
 
+        self.resource_id = time.time()
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
+
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
@@ -43,12 +46,12 @@ class Config:
         self.slack_webhook_url = os.environ['SLACK_WEBHOOK_URL']
 
         parser = argparse.ArgumentParser()
-        parser.add_argument('-b', '--build-id', help='Override the build ID')
+        parser.add_argument('-r', '--resource-id', help='Override the resource ID')
         parser.add_argument('-d', '--delete', action='store_true', help='Delete all pushbot resources on the account')
         options = parser.parse_args(args[1:])
 
-        if options.build_id:
-            self.build_id = options.build_id
+        if options.resource_id:
+            self.resource_id = options.resource_id
 
         if options.delete:
             self.action = Action.DELETE
