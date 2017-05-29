@@ -67,12 +67,12 @@ def retire(context):
 
     pushbot_instances = ec2.instances.filter(
         Filters=[
-            {'Name': 'tag:purpose', 'Values': ['pushbot']},
+            {'Name': 'tag:Purpose', 'Values': ['pushbot']},
             {'Name': 'instance-state-name', 'Values': ['pending', 'running']}
         ]
     )
     pushbot_security_groups = ec2.security_groups.filter(
-        Filters=[{'Name': 'tag:purpose', 'Values': ['pushbot']}]
+        Filters=[{'Name': 'tag:Purpose', 'Values': ['pushbot']}]
     )
     pushbot_key_pairs = ec2.key_pairs.filter(
         Filters=[{'Name': 'key-name', 'Values': ['azurefire*']}]
