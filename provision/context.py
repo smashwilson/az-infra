@@ -46,6 +46,9 @@ class Context:
         normalized_name = service_name.replace('-', '_')
         return getattr(self.config, '{}_branch'.format(normalized_name))
 
+    def build_href(self):
+        return 'https://travis-ci.org/smashwilson/azurefire-infra/builds/{}'.format(self.config.build_id)
+
     def elapsed_time(self):
         delta = datetime.utcnow() - self.start_ts
         parts = []

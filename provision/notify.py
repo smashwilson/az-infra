@@ -25,7 +25,7 @@ def success(context):
                 'fallback': 'azurefire infrastructure deployed successfully.',
                 'color': 'good',
                 'title': 'Azurefire infrastructure deployed successfully.',
-                'title_link': '',
+                'title_link': context.build_href(),
                 'text': 'Server `{}` launched and bootstrapped in _{}_.'.format(context.instance.id, context.elapsed_time()),
                 'mrkdwn_in': ['text'],
                 'fields': fields
@@ -44,7 +44,7 @@ def failure(context, formatted_tb):
                 'fallback': 'azurefire infrastructure deployment failed.',
                 'color': 'danger',
                 'title': 'Azurefire infrastructure deployment failed.',
-                'title_link': '',
+                'title_link': context.build_href(),
                 'text': "Here's the stack:\n```\n{}\n```\n".format(formatted_tb),
                 'mrkdwn_in': ['text']
             }
