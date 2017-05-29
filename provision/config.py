@@ -33,7 +33,7 @@ class Config:
         self.azurefire_nginx_branch = public_ini.get('nginx', 'branch')
         self.azurefire_tls_branch = public_ini.get('tls', 'branch')
 
-        self.resource_id = time.time()
+        self.resource_id = int(time.time())
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
 
         self.le_email = os.environ['LE_EMAIL']

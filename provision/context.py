@@ -18,7 +18,7 @@ class Context:
         self.bootstrap_result = None
 
     def make_name(self, base):
-        return 'azurefire_' + base + '_' + self.config.resource_id
+        return 'azurefire_' + base + '_' + str(self.config.resource_id)
 
     def make_tags(self):
         return [
