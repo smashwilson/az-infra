@@ -44,7 +44,7 @@ class Context:
 
     def service_image_tag(self, service_name):
         normalized_name = service_name.replace('-', '_')
-        return getattr(self.config, '{}_branch'.format(normalized_name))
+        return getattr(self.config, '{}_tag'.format(normalized_name))
 
     def build_href(self):
         return 'https://travis-ci.org/smashwilson/azurefire-infra/builds/{}'.format(self.config.build_id)
