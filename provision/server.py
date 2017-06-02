@@ -112,18 +112,6 @@ def bootstrap(context):
     Connect to the EC2 instance over SSH and pipe the bootstrapping script to bash.
     """
 
-    info('collecting host key signature')
-    keyscan = subprocess.run(
-        ['ssh-keyscan', context.instance.public_ip_address],
-        check=True,
-        stdout=subprocess.PIPE,
-        encoding='utf-8',
-        universal_newlines=False
-    )
-    os.makedirs(os.path.join(os.environ['HOME'], '.ssh'), mode=0o700, exist_ok=True)
-    with open(os.path.join(os.environ['HOME'], '.ssh', 'known_hosts'), 'w') as hostfile:
-        hostfile.write(keyscan.stdout)
-
     info('generating bootstrapping script from template')
     script = template.render(context, 'bootstrap.sh.j2')
 
@@ -131,6 +119,7 @@ def bootstrap(context):
     ssh = [
         'ssh',
         '-i', os.path.join('secrets', 'id_rsa'),
+        '-o', 'StrictHostKeyChecking=no',
         'core@{}'.format(context.instance.public_ip_address),
         '/bin/bash'
     ]
