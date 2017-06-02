@@ -52,8 +52,8 @@ report_versions()
 }
 
 multipull \
-  quay.io/smashwilson/pushbot:{{ pushbot.branch }} \
-  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+  quay.io/smashwilson/pushbot:{{ pushbot.tag }} \
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
 
 # Install a timer to automatically renew the TLS certificates.
 
@@ -67,7 +67,7 @@ Type=oneshot
 ExecStart=/usr/bin/docker run --rm \
   --env EMAIL={{ letsencrypt.email }} \
   --env LE_PRODUCTION=yes \
-  quay.io/smashwilson/azurefire-tls:{{ tls.branch }}
+  quay.io/smashwilson/azurefire-tls:{{ tls.tag }}
 EOF
 
 cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.timer > /dev/null
@@ -108,7 +108,7 @@ docker run \
   --env PRIOR_ADDRESSES="{{ pushbot.prior_addresses }}" \
   --env MAGICAL_WEAK_SPOT_TOKEN="{{ secrets.magical_weak_spot_token }}" \
   --name pushbot \
-  quay.io/smashwilson/pushbot:{{ pushbot.branch }}
+  quay.io/smashwilson/pushbot:{{ pushbot.tag }}
 
 docker run \
   --restart=unless-stopped \
@@ -119,9 +119,9 @@ docker run \
   --env S3_BUCKET_NAME=azurefire-tls \
   --publish 443:443 \
   --publish 80:80 \
-  quay.io/smashwilson/azurefire-nginx:{{ nginx.branch }}
+  quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
 
 # Output service versions for the Slack notification
 
-report_versions pushbot "{{ pushbot.branch }}"
-report_versions azurefire-nginx "{{ nginx.branch }}"
+report_versions pushbot "{{ pushbot.tag }}"
+report_versions azurefire-nginx "{{ nginx.tag }}"

@@ -25,13 +25,13 @@ class Config:
 
         self.rds_security_group_id = public_ini.get('rds', 'security_group_id')
         self.bootstrap_timeout = public_ini.getint('bootstrap', 'timeout')
-        self.pushbot_branch = public_ini.get('pushbot', 'branch')
+        self.pushbot_tag = public_ini.get('pushbot', 'tag')
         self.pushbot_admins = public_ini.get('pushbot', 'admins')
         self.pushbot_betray_immune = public_ini.get('pushbot', 'betray_immune')
         self.pushbot_dnd_public_channel = public_ini.get('pushbot', 'betray_immune')
 
-        self.azurefire_nginx_branch = public_ini.get('nginx', 'branch')
-        self.azurefire_tls_branch = public_ini.get('tls', 'branch')
+        self.azurefire_nginx_tag = public_ini.get('nginx', 'tag')
+        self.azurefire_tls_tag = public_ini.get('tls', 'tag')
 
         self.resource_id = int(time.time())
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')

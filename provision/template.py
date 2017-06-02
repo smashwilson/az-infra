@@ -20,17 +20,17 @@ def template_payload(context):
 
     return {
         'pushbot': {
-            'branch': context.config.pushbot_branch,
+            'tag': context.config.pushbot_tag,
             'dnd_public_channel': context.config.pushbot_dnd_public_channel,
             'admins': context.config.pushbot_admins,
             'betray_immune': context.config.pushbot_betray_immune,
             'prior_addresses': prior_addresses
         },
         'nginx': {
-            'branch': context.config.azurefire_nginx_branch
+            'tag': context.config.azurefire_nginx_tag
         },
         'tls': {
-            'branch': context.config.azurefire_tls_branch
+            'tag': context.config.azurefire_tls_tag
         },
         'letsencrypt': {
             'email': context.config.le_email
