@@ -24,6 +24,7 @@ if context.config.action == Action.PROVISION:
         sys.exit(1)
 elif context.config.action == Action.DELETE:
     try:
+        loadbalancer.provision(context)
         cleanup.retire(context)
     except:
         error('unable to delete resources\n{}'.format(traceback.format_exc()))
