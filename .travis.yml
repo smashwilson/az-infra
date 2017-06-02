@@ -2,10 +2,10 @@ sudo: false
 language: python
 python:
 - "3.6"
-script: script/test
+script: script/ci/test
 deploy:
   provider: script
   skip_cleanup: true
-  script: script/deploy
+  script: script/ci/deploy
   on:
     branch: master
