@@ -41,6 +41,8 @@ def template_payload(context):
             'darksky_apikey': context.config.darksky_apikey,
             'google_cse_id': context.config.google_cse_id,
             'google_cse_key': context.config.google_cse_key
+            'google_cse_key': context.config.google_cse_key,
+            'magical_weak_spot_token': context.config.magical_weak_spot_token
         }
     }
 
