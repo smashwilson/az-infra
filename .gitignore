@@ -1,3 +1,6 @@
 bin/
 credentials.md
-*.ps1
+/*.ps1
+/*.sh
+!/*.example.ps1
+!/*.example.sh
