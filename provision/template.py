@@ -14,9 +14,9 @@ def template_payload(context):
     """
 
     if context.elb_targets:
-        prior_ip_addresses = ','.join(i['IpAddr'] for i in context.elb_targets)
+        prior_addresses = ','.join(i['IpAddr'] for i in context.elb_targets)
     else:
-        prior_ip_addresses = ''
+        prior_addresses = ''
 
     return {
         'pushbot': {
@@ -24,7 +24,7 @@ def template_payload(context):
             'dnd_public_channel': context.config.pushbot_dnd_public_channel,
             'admins': context.config.pushbot_admins,
             'betray_immune': context.config.pushbot_betray_immune,
-            'prior_ip_addresses': prior_ip_addresses
+            'prior_addresses': prior_addresses
         },
         'nginx': {
             'branch': context.config.azurefire_nginx_branch
@@ -40,7 +40,8 @@ def template_payload(context):
             'slack_token': context.config.slack_token,
             'darksky_apikey': context.config.darksky_apikey,
             'google_cse_id': context.config.google_cse_id,
-            'google_cse_key': context.config.google_cse_key
+            'google_cse_key': context.config.google_cse_key,
+            'magical_weak_spot_token': context.config.magical_weak_spot_token
         }
     }
 

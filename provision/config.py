@@ -42,6 +42,7 @@ class Config:
         self.darksky_apikey = os.environ['DARKSKY_APIKEY']
         self.google_cse_id = os.environ['GOOGLE_CSE_ID']
         self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
+        self.magical_weak_spot_token = os.environ['MAGICAL_WEAK_SPOT_TOKEN']
 
         self.slack_webhook_url = os.environ['SLACK_WEBHOOK_URL']
 
