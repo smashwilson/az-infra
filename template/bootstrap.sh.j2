@@ -67,6 +67,8 @@ Type=oneshot
 ExecStart=/usr/bin/docker run --rm \
   --env EMAIL={{ letsencrypt.email }} \
   --env LE_PRODUCTION=yes \
+  --log-driver=awslogs \
+  --log-opt awslogs-group=azurefire-tls \
   quay.io/smashwilson/azurefire-tls:{{ tls.tag }}
 EOF
 
@@ -94,6 +96,8 @@ docker run \
   --read-only \
   --detach \
   --network hubot \
+  --log-driver=awslogs \
+  --log-opt awslogs-group=pushbot \
   --env DATABASE_URL="{{ secrets.postgres_url }}" \
   --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
   --env HUBOT_MARKOV_STORAGE=postgres \
@@ -114,11 +118,13 @@ docker run \
   --restart=unless-stopped \
   --detach \
   --network hubot \
-  --name nginx \
+  --log-driver=awslogs \
+  --log-opt awslogs-group=azurefire-nginx \
   --env AWS_DEFAULT_REGION=us-east-1 \
   --env S3_BUCKET_NAME=azurefire-tls \
   --publish 443:443 \
   --publish 80:80 \
+  --name nginx \
   quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
 
 # Output service versions for the Slack notification
