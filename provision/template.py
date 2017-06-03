@@ -19,6 +19,9 @@ def template_payload(context):
         prior_addresses = ''
 
     return {
+        'resource': {
+            'id': context.config.resource_id
+        },
         'pushbot': {
             'tag': context.config.pushbot_tag,
             'dnd_public_channel': context.config.pushbot_dnd_public_channel,

@@ -71,6 +71,7 @@ ExecStart=/usr/bin/docker run --rm \
   --env LE_PRODUCTION=yes \
   --log-driver=awslogs \
   --log-opt awslogs-group=azurefire-tls \
+  --log-opt awslogs-stream={{ resource.id }} \
   quay.io/smashwilson/azurefire-tls:{{ tls.tag }}
 EOF
 
@@ -100,6 +101,7 @@ docker run \
   --network hubot \
   --log-driver=awslogs \
   --log-opt awslogs-group=pushbot \
+  --log-opt awslogs-stream={{ resource.id }} \
   --env DATABASE_URL="{{ secrets.postgres_url }}" \
   --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
   --env HUBOT_MARKOV_STORAGE=postgres \
@@ -122,6 +124,7 @@ docker run \
   --network hubot \
   --log-driver=awslogs \
   --log-opt awslogs-group=azurefire-nginx \
+  --log-opt awslogs-stream={{ resource.id }} \
   --env AWS_DEFAULT_REGION=us-east-1 \
   --env S3_BUCKET_NAME=azurefire-tls \
   --publish 443:443 \
