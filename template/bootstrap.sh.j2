@@ -51,6 +51,8 @@ report_versions()
     quay.io/smashwilson/${SERVICE_NAME}:${SERVICE_BRANCH}
 }
 
+sudo timedatectl set-timezone UTC
+
 multipull \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }} \
   quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
