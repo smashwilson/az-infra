@@ -7,10 +7,10 @@ def success(context):
     fields = []
     for (name, service) in bootstrap_result.services():
         github_url = 'https://github.com/smashwilson/{}/commit/{}'.format(name, service['git_commit'])
-        github_short = context.service_git_branch(name)
+        github_short = '{} @ {}'.format(context.service_git_branch(name), service['git_commit'][0:8])
 
         quay_url = 'https://quay.io/repository/smashwilson/{}/image/{}'.format(name, service['image_id'])
-        quay_short = context.service_image_tag(name)
+        quay_short = '{} @ {}'.format(context.service_image_tag(name), service['image_id'][0:8])
 
         fields.append({
             'title': name,
