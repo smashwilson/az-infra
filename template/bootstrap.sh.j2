@@ -95,7 +95,7 @@ sudo systemctl start azurefire-tls.timer
 docker network create hubot
 
 docker run \
-  --restart=unless-stopped \
+  --restart=always \
   --read-only \
   --detach \
   --network hubot \
@@ -119,7 +119,7 @@ docker run \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }}
 
 docker run \
-  --restart=unless-stopped \
+  --restart=always \
   --detach \
   --network hubot \
   --log-driver=awslogs \
