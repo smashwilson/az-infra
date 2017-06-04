@@ -30,8 +30,8 @@ class Config:
         self.pushbot_betray_immune = public_config['pushbot']['betray_immune']
         self.pushbot_dnd_public_channel = public_config['pushbot']['betray_immune']
 
-        self.azurefire_nginx_tag = public_config['azurefire_nginx']['tag']
-        self.azurefire_tls_tag = public_config['azurefire_tls']['tag']
+        self.azurefire_nginx_tag = public_config['azurefire-nginx']['tag']
+        self.azurefire_tls_tag = public_config['azurefire-tls']['tag']
 
         self.resource_id = int(time.time())
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
