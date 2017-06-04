@@ -1,5 +1,5 @@
 import os
-import configparser
+import json
 import argparse
 import time
 
@@ -12,26 +12,26 @@ class Action(Enum):
 class Config:
 
     def __init__(self, args):
-        public_ini = configparser.ConfigParser()
-        public_ini.read('config.ini')
+        with open('config.ini', 'r') as cf:
+            public_config = json.load(cf)
 
-        self.loadbalancer_name = public_ini.get('loadbalancer', 'name')
+        self.loadbalancer_name = public_config['loadbalancer']['name']
 
-        self.image_id = public_ini.get('server', 'image_id')
-        self.instance_type = public_ini.get('server', 'instance_type')
-        self.ssh_attempts = public_ini.getint('server', 'ssh_timeout') / 10
-        self.instance_profile_arn = public_ini.get('server', 'instance_profile_arn')
-        self.instance_az = public_ini.get('server', 'instance_az')
+        self.image_id = public_config['server']['image_id']
+        self.instance_type = public_config['server']['instance_type']
+        self.ssh_attempts = public_config['server']['ssh_timeout']
+        self.instance_profile_arn = public_config['server']['instance_profile_arn']
+        self.instance_az = public_config['server']['instance_az']
 
-        self.rds_security_group_id = public_ini.get('rds', 'security_group_id')
-        self.bootstrap_timeout = public_ini.getint('bootstrap', 'timeout')
-        self.pushbot_tag = public_ini.get('pushbot', 'tag')
-        self.pushbot_admins = public_ini.get('pushbot', 'admins')
-        self.pushbot_betray_immune = public_ini.get('pushbot', 'betray_immune')
-        self.pushbot_dnd_public_channel = public_ini.get('pushbot', 'betray_immune')
+        self.rds_security_group_id = public_config['rds']['security_group_id']
+        self.bootstrap_timeout = public_config['bootstrap']['timeout']
+        self.pushbot_tag = public_config['pushbot']['tag']
+        self.pushbot_admins = public_config['pushbot']['admins']
+        self.pushbot_betray_immune = public_config['pushbot']['betray_immune']
+        self.pushbot_dnd_public_channel = public_config['pushbot']['betray_immune']
 
-        self.azurefire_nginx_tag = public_ini.get('nginx', 'tag')
-        self.azurefire_tls_tag = public_ini.get('tls', 'tag')
+        self.azurefire_nginx_tag = public_config['azurefire_nginx']['tag']
+        self.azurefire_tls_tag = public_config['azurefire_tls']['tag']
 
         self.resource_id = int(time.time())
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
