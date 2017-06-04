@@ -5,7 +5,7 @@
   "server": {
     "image_id": "ami-ad593cbb",
     "instance_type": "t2.micro",
-    "ssh_timeout": 120,
+    "ssh_timeout": 240,
     "instance_profile_arn": "arn:aws:iam::497481419567:instance-profile/azurefire-host",
     "instance_az": "us-east-1a"
   },
@@ -16,7 +16,7 @@
     "timeout": 240
   },
   "pushbot": {
-    "tag": "latest",
+    "tag": "anyone",
     "admins": "U02D23B7J,U02D23G6N",
     "betray_immune": "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67",
     "dnd_public_channel": "C31NEFF89"
