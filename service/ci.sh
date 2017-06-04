@@ -15,7 +15,14 @@ set -euo pipefail
 # Collect and summarize information from the environment into variables for use
 # by other build phases.
 info() {
-  [ -z "${SERVICE_NAME:-}" ] && SERVICE_NAME="${TRAVIS_REPO_SLUG#*/}"
+  if [ -z "${SERVICE_NAME:-}" ]; then
+    if [ -z "${TRAVIS_REPO_SLUG}" ]; then
+      printf "Unable to infer SERVICE_NAME.\n" >&2
+      return 1
+    fi
+
+    SERVICE_NAME="${TRAVIS_REPO_SLUG#*/}"
+  fi
 
   IMAGE_BASE="quay.io/smashwilson/${SERVICE_NAME}"
 
@@ -51,6 +58,12 @@ build() {
 # Invoke during the after_success: phase. Push the built docker image to
 # quay.io if credentials are present.
 after_success() {
+  if [ -z "${DOCKER_USERNAME:-}" ] || [ -z "${DOCKER_PASSWORD:-}" ]; then
+    printf "Docker credentials not present.\n"
+    printf "Skipping image push for this build.\n"
+    return 0
+  fi
+
   info
 
   printf "Authenticating to Quay.\n"
@@ -63,6 +76,11 @@ after_success() {
 # Invoke from a deploy: phase. Trigger a rebuild of the latest pull request
 # build on the azurefire-infra repository.
 deploy() {
+  if [ -z "${TRAVIS_TOKEN:-}" ]; then
+    printf "TRAVIS_TOKEN is not specified for this build.\n" >&2
+    exit 1
+  fi
+
   info
 
   printf "Checking the active azurefire-infra configuration.\n"
