@@ -12,16 +12,18 @@ from provision import notify
 context = Context(sys.argv)
 if context.config.action == Action.PROVISION:
     try:
+        notify.begin(context)
         loadbalancer.provision(context)
         server.provision(context)
         cleanup.retire(context)
-        notify.success(context)
     except:
         formatted_tb = traceback.format_exc()
         error('provisioning error\n{}'.format(formatted_tb))
         notify.failure(context, formatted_tb)
         cleanup.rollback(context)
         sys.exit(1)
+    else:
+        notify.success(context)
 elif context.config.action == Action.DELETE:
     try:
         loadbalancer.provision(context)
