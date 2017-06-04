@@ -84,7 +84,7 @@ deploy() {
   info
 
   printf "Checking the active azurefire-infra configuration.\n"
-  curl https://raw.githubusercontent.com/smashwilson/azurefire-infra/service-bunp/config.json \
+  curl https://raw.githubusercontent.com/smashwilson/azurefire-infra/master/config.json \
     -o config.json
 
   DEPLOYED_TAG=$(jq --raw-output ".${SERVICE_NAME}.tag" < config.json)
