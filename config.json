@@ -13,7 +13,7 @@
     "security_group_id": "sg-37394a4a"
   },
   "bootstrap": {
-    "timeout": 120
+    "timeout": 240
   },
   "pushbot": {
     "tag": "latest",
