@@ -12,7 +12,7 @@ class Action(Enum):
 class Config:
 
     def __init__(self, args):
-        with open('config.ini', 'r') as cf:
+        with open('config.json', 'r') as cf:
             public_config = json.load(cf)
 
         self.loadbalancer_name = public_config['loadbalancer']['name']
