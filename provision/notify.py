@@ -3,8 +3,6 @@ import requests
 def begin(context):
     webhook_url = context.config.slack_webhook_url
     requests.post(webhook_url, json={
-        'username': 'azurefire',
-        'icon_emoji': ':shipit',
         'text': 'Infrastructure deployment is <{}|now in progress>.'.format(context.build_href())
     })
 
@@ -26,8 +24,6 @@ def success(context):
         })
 
     requests.post(webhook_url, json={
-        'username': 'azurefire',
-        'icon_emoji': ':shipit:',
         'attachments': [
             {
                 'fallback': 'azurefire infrastructure deployed successfully.',
@@ -45,8 +41,6 @@ def failure(context, formatted_tb):
     webhook_url = context.config.slack_webhook_url
 
     requests.post(webhook_url, json={
-        'username': 'azurefire',
-        'icon_emoji': ':rotating_light:',
         'attachments': [
             {
                 'fallback': 'azurefire infrastructure deployment failed.',
