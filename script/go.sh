@@ -1,6 +1,8 @@
 #!/bin/bash
 # Provision a new deployment using the credentials in credentials.ps1.
 
+set -euo pipefail
+
 source ./credentials.sh
 
 docker build -t azurefire-infra:local .
@@ -17,5 +19,5 @@ docker run --rm \
   -e LE_EMAIL \
   -e SLACK_WEBHOOK_URL \
   -e MAGICAL_WEAK_SPOT_TOKEN \
-  -v C:/Users/smash/src/azurefire-infra/out:/usr/src/app/out:rw \
+  -v $(pwd)/out:/usr/src/app/out:rw \
   azurefire-infra:local "$@"
