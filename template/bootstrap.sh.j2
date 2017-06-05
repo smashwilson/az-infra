@@ -51,6 +51,7 @@ report_versions()
     quay.io/smashwilson/${SERVICE_NAME}:${SERVICE_BRANCH}
 }
 
+sudo systemctl enable docker.service
 sudo timedatectl set-timezone UTC
 
 multipull \
