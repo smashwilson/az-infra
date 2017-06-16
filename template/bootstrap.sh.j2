@@ -115,7 +115,11 @@ docker run \
   --env HUBOT_GOOGLE_CSE_ID="{{ secrets.google_cse_id }}" \
   --env HUBOT_GOOGLE_CSE_KEY="{{ secrets.google_cse_key }}" \
   --env PRIOR_ADDRESSES="{{ pushbot.prior_addresses }}" \
+  --env SLACK_CLIENT_ID="{{ secrets.slack_client_id }}" \
+  --env SLACK_CLIENT_SECRET="{{ secrets.slack_client_secret }}" \
+  --env SLACK_TEAM_ID="{{ pushbot.slack_team_id }}" \
   --env MAGICAL_WEAK_SPOT_TOKEN="{{ secrets.magical_weak_spot_token }}" \
+  --env SESSION_SECRET="{{ secrets. session_secret }}" \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }}
 

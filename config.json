@@ -19,7 +19,8 @@
     "tag": "latest",
     "admins": "U02D23B7J,U02D23G6N",
     "betray_immune": "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67",
-    "dnd_public_channel": "C31NEFF89"
+    "dnd_public_channel": "C31NEFF89",
+    "slack_team_id": "T02D23B7G"
   },
   "azurefire-nginx": {
     "tag": "latest"

@@ -27,7 +27,8 @@ def template_payload(context):
             'dnd_public_channel': context.config.pushbot_dnd_public_channel,
             'admins': context.config.pushbot_admins,
             'betray_immune': context.config.pushbot_betray_immune,
-            'prior_addresses': prior_addresses
+            'prior_addresses': prior_addresses,
+            'slack_team_id': context.config.pushbot_slack_team_id
         },
         'nginx': {
             'tag': context.config.azurefire_nginx_tag
@@ -41,9 +42,12 @@ def template_payload(context):
         'secrets': {
             'postgres_url': context.config.postgres_url,
             'slack_token': context.config.slack_token,
+            'slack_client_id': context.config.slack_client_id,
+            'slack_client_secret': context.config.slack_client_secret,
             'darksky_apikey': context.config.darksky_apikey,
             'google_cse_id': context.config.google_cse_id,
             'google_cse_key': context.config.google_cse_key,
+            'session_secret': context.config.session_secret,
             'magical_weak_spot_token': context.config.magical_weak_spot_token
         }
     }

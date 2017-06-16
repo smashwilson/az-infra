@@ -29,6 +29,7 @@ class Config:
         self.pushbot_admins = public_config['pushbot']['admins']
         self.pushbot_betray_immune = public_config['pushbot']['betray_immune']
         self.pushbot_dnd_public_channel = public_config['pushbot']['betray_immune']
+        self.pushbot_slack_team_id = public_config['pushbot']['slack_team_id']
 
         self.azurefire_nginx_tag = public_config['azurefire-nginx']['tag']
         self.azurefire_tls_tag = public_config['azurefire-tls']['tag']
@@ -39,9 +40,12 @@ class Config:
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
+        self.slack_client_id = os.environ['SLACK_CLIENT_ID']
+        self.slack_client_secret = os.environ['SLACK_CLIENT_SECRET']
         self.darksky_apikey = os.environ['DARKSKY_APIKEY']
         self.google_cse_id = os.environ['GOOGLE_CSE_ID']
         self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
+        self.session_secret = os.environ['SESSION_SECRET']
         self.magical_weak_spot_token = os.environ['MAGICAL_WEAK_SPOT_TOKEN']
 
         self.slack_webhook_url = os.environ['SLACK_WEBHOOK_URL']
