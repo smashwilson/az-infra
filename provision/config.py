@@ -30,6 +30,8 @@ class Config:
         self.pushbot_betray_immune = public_config['pushbot']['betray_immune']
         self.pushbot_dnd_public_channel = public_config['pushbot']['betray_immune']
         self.pushbot_slack_team_id = public_config['pushbot']['slack_team_id']
+        self.pushbot_api_base_url = public_config['pushbot']['api_base_url']
+        self.pushbot_web_base_url = public_config['pushbot']['web_base_url']
 
         self.azurefire_nginx_tag = public_config['azurefire-nginx']['tag']
         self.azurefire_tls_tag = public_config['azurefire-tls']['tag']

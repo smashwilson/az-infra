@@ -28,7 +28,9 @@ def template_payload(context):
             'admins': context.config.pushbot_admins,
             'betray_immune': context.config.pushbot_betray_immune,
             'prior_addresses': prior_addresses,
-            'slack_team_id': context.config.pushbot_slack_team_id
+            'slack_team_id': context.config.pushbot_slack_team_id,
+            'api_base_url': context.config.pushbot_api_base_url,
+            'web_base_url': context.config.pushbot_web_base_url
         },
         'nginx': {
             'tag': context.config.azurefire_nginx_tag
