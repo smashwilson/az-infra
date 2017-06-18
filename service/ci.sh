@@ -87,7 +87,7 @@ deploy() {
   curl https://raw.githubusercontent.com/smashwilson/azurefire-infra/master/config.json \
     -o config.json
 
-  DEPLOYED_TAG=$(jq --raw-output ".${SERVICE_NAME}.tag" < config.json)
+  DEPLOYED_TAG=$(jq --raw-output ".[\"${SERVICE_NAME}\"].tag" < config.json)
   if [ "${DEPLOYED_TAG}" != "${TAG}" ]; then
     printf "Tag %s is currently deployed, not %s.\n" "${DEPLOYED_TAG}" "${TAG}"
     return 0
