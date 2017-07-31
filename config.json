@@ -5,7 +5,7 @@
   "server": {
     "image_id": "ami-ad593cbb",
     "instance_type": "t2.micro",
-    "ssh_timeout": 240,
+    "ssh_timeout": 480,
     "instance_profile_arn": "arn:aws:iam::497481419567:instance-profile/azurefire-host",
     "instance_az": "us-east-1a"
   },
@@ -13,7 +13,7 @@
     "security_group_id": "sg-37394a4a"
   },
   "bootstrap": {
-    "timeout": 240
+    "timeout": 480
   },
   "pushbot": {
     "tag": "latest",
