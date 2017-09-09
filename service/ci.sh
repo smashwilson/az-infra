@@ -93,7 +93,17 @@ deploy() {
     return 0
   fi
 
-  BODY='{"request":{"branch":"master"}}'
+  BODY='{
+    "request": {
+      "branch": "master",
+      "config": {
+        "merge_mode": "deep_merge",
+        "env": {
+          "BUILD_CAUSE": ":arrow_up: '${TRAVIS_REPO_SLUG}'"
+        }
+      }
+    }
+  }'
   printf "Triggering an infrastructure rebuild.\n"
   curl -s -X POST \
     -H "Content-Type: application/json" \
