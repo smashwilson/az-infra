@@ -1,4 +1,5 @@
 import requests
+import os
 
 def begin(context):
     webhook_url = context.config.slack_webhook_url
