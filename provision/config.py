@@ -42,6 +42,7 @@ class Config:
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
+        self.travis_token = os.environ['TRAVIS_TOKEN']
         self.slack_client_id = os.environ['SLACK_CLIENT_ID']
         self.slack_client_secret = os.environ['SLACK_CLIENT_SECRET']
         self.darksky_apikey = os.environ['DARKSKY_APIKEY']

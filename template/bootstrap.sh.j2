@@ -70,6 +70,7 @@ Type=oneshot
 ExecStart=/usr/bin/docker run --rm \
   --env EMAIL={{ letsencrypt.email }} \
   --env LE_PRODUCTION=yes \
+  --env TRAVIS_TOKEN={{ secrets.travis_token }} \
   --log-driver=awslogs \
   --log-opt awslogs-group=azurefire-tls \
   --log-opt awslogs-stream={{ resource.id }} \

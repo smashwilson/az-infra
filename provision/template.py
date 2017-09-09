@@ -44,6 +44,7 @@ def template_payload(context):
         'secrets': {
             'postgres_url': context.config.postgres_url,
             'slack_token': context.config.slack_token,
+            'travis_token': context.config.travis_token,
             'slack_client_id': context.config.slack_client_id,
             'slack_client_secret': context.config.slack_client_secret,
             'darksky_apikey': context.config.darksky_apikey,

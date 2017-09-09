@@ -16,6 +16,7 @@ export POSTGRES_URL=postgres://me:shhh@localhost/dbname
 
 # Account tokens and API keys
 export SLACK_TOKEN=
+export TRAVIS_TOKEN=
 export SLACK_WEBHOOK_URL=
 export DARKSKY_APIKEY=
 export GOOGLE_CSE_ID=

@@ -16,6 +16,7 @@ $env:POSTGRES_URL = 'postgres://me:shhh@localhost/dbname'
 
 # Account tokens and API keys
 $env:SLACK_TOKEN = ''
+$env:TRAVIS_TOKEN = ''
 $env:SLACK_WEBHOOK_URL = ''
 $env:DARKSKY_APIKEY = ''
 $env:GOOGLE_CSE_ID = ''
