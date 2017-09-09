@@ -2,8 +2,14 @@ import requests
 
 def begin(context):
     webhook_url = context.config.slack_webhook_url
+    message = context.config.message
+    if not message:
+        message = os.environ.get('TRAVIS_COMMIT_MESSAGE', '(unknown)')
     requests.post(webhook_url, json={
-        'text': 'Infrastructure deployment is <{}|now in progress>.'.format(context.build_href())
+        'text': 'Infrastructure deployment is <{}|now in progress>.\n_{}_'.format(
+            context.build_href(),
+            message
+        )
     })
 
 def success(context):

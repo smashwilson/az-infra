@@ -38,6 +38,7 @@ class Config:
 
         self.resource_id = int(time.time())
         self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
+        self.message = os.environ.get('BUILD_CAUSE')
 
         self.le_email = os.environ['LE_EMAIL']
         self.postgres_url = os.environ['POSTGRES_URL']
