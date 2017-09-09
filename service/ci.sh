@@ -98,9 +98,9 @@ deploy() {
       "branch": "master",
       "config": {
         "merge_mode": "deep_merge",
-        "env": {
-          "BUILD_CAUSE": ":arrow_up: '${TRAVIS_REPO_SLUG}'"
-        }
+        "env": [
+          "BUILD_CAUSE=:arrow_up: '${TRAVIS_REPO_SLUG}'"
+        ]
       }
     }
   }'
