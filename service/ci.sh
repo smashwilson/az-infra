@@ -99,7 +99,7 @@ deploy() {
       "config": {
         "merge_mode": "deep_merge",
         "env": [
-          "BUILD_CAUSE=:arrow_up: '${TRAVIS_REPO_SLUG}'"
+          "BUILD_CAUSE=\":arrow_up: '${TRAVIS_REPO_SLUG}'\""
         ]
       }
     }
