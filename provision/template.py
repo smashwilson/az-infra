@@ -43,6 +43,7 @@ def template_payload(context):
         },
         'secrets': {
             'postgres_url': context.config.postgres_url,
+            'kms_key_id': context.config.kms_key_id,
             'slack_token': context.config.slack_token,
             'travis_token': context.config.travis_token,
             'slack_client_id': context.config.slack_client_id,

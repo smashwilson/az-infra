@@ -41,6 +41,7 @@ class Config:
         self.message = os.environ.get('BUILD_CAUSE')
 
         self.le_email = os.environ['LE_EMAIL']
+        self.kms_key_id = os.environ['KMS_KEY_ID']
         self.postgres_url = os.environ['POSTGRES_URL']
         self.slack_token = os.environ['SLACK_TOKEN']
         self.travis_token = os.environ['TRAVIS_TOKEN']
