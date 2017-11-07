@@ -16,7 +16,7 @@
     "timeout": 480
   },
   "pushbot": {
-    "tag": "latest",
+    "tag": "wtf",
     "admins": "U02D23B7J,U02D23G6N",
     "betray_immune": "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67",
     "dnd_public_channel": "C31NEFF89",
