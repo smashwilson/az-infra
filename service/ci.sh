@@ -30,8 +30,10 @@ info() {
   if [ "${TRAVIS_PULL_REQUEST:-}" = "false" ]; then
     if [ "${TRAVIS_BRANCH:-}" = "master" ]; then
       TAG="latest"
+    elif [ -n "${TRAVIS_BRANCH:-}" ]; then
+      TAG="${TRAVIS_BRANCH//[^a-zA-Z0-9_.-]/.}"
     else
-      TAG="${TRAVIS_BRANCH:-local}"
+      TAG="local"
     fi
   elif [ -n "${TRAVIS_PULL_REQUEST:-}" ]; then
     TAG="pr${TRAVIS_PULL_REQUEST}"
