@@ -3,6 +3,7 @@ import pathlib
 import shutil
 import socket
 import subprocess
+import time
 
 from provision import template
 from provision.connection import ec2, elb
@@ -164,12 +165,16 @@ def _wait_for_ssh(public_ip, attempts):
     Wait for an SSH daemon to begin listening at port 22.
     """
 
-    for i in range(60):
+    for i in range(120):
         try:
             s = socket.create_connection((public_ip, 22), 10)
             s.shutdown(socket.SHUT_RDWR)
             s.close()
             return
-        except (socket.timeout, ConnectionRefusedError):
+        except socket.timeout:
+            info('{}: timeout'.format(i))
             pass
+        except ConnectionRefusedError:
+            info('{}: connection refused'.format(i))
+            time.sleep(5)
     raise RuntimeError('Timed out waiting for SSH daemon')
