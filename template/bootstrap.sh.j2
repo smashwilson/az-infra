@@ -164,10 +164,8 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-for UNIT in azurefire-tls.timer azurefire-nginx pushbot; do
-  sudo systemctl enable ${UNIT}
-  sudo systemctl start ${UNIT}
-done
+sudo systemctl enable azurefire-tls.timer azurefire-nginx.service pushbot.service
+sudo systemctl start azurefire-tls.timer azurefire-nginx.service pushbot.service
 
 # Output service versions for the Slack notification
 
