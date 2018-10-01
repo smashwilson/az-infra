@@ -127,6 +127,7 @@ docker run \
   --env SESSION_SECRET="{{ secrets. session_secret }}" \
   --env API_BASE_URL="{{ pushbot.api_base_url }}" \
   --env WEB_BASE_URL="{{ pushbot.web_base_url }}" \
+  --env HUBOT_LOG_LEVEL=debug \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }}
 
