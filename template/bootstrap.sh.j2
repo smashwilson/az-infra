@@ -4,7 +4,7 @@ set -euo pipefail
 
 multipull()
 {
-  local IMAGES="${1:-}"
+  local IMAGES="$@"
   local PIDS=""
   local FAILED="false"
 
