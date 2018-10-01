@@ -56,9 +56,13 @@ echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCz8jAdEFd17WxD6nGF0Vh6LqiNfHwom8xNsH
 sudo systemctl enable docker.service
 sudo timedatectl set-timezone UTC
 
+# One-time Docker preparation
+
 multipull \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }} \
   quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
+
+docker network create hubot
 
 # Install a timer to automatically renew the TLS certificates.
 
@@ -93,16 +97,19 @@ OnCalendar=*-*-* 01:00:00
 WantedBy=timers.target
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl enable azurefire-tls.timer
-sudo systemctl start azurefire-tls.timer
-
 # Launch containers
 
-docker network create hubot
+cat <<EOF | sudo tee /etc/systemd/system/pushbot.service > /dev/null
+[Unit]
+Description=Here To Protect Us
+After=docker.service
+Requires=docker.service
 
-docker run \
-  --restart=always \
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill pushbot
+ExecStartPre=-/usr/bin/docker rm pushbot
+ExecStart=/usr/bin/docker run \
   --read-only \
   --detach \
   --network hubot \
@@ -129,9 +136,21 @@ docker run \
   --name pushbot \
   quay.io/smashwilson/pushbot:{{ pushbot.tag }}
 
-docker run \
-  --restart=always \
-  --detach \
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat <<EOF | sudo tee /etc/systemd/system/azurefire-nginx.service > /dev/null
+[Unit]
+Description=nginx
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill nginx
+ExecStartPre=-/usr/bin/docker rm nginx
+ExecStart=/usr/bin/docker run \
   --network hubot \
   --env AWS_DEFAULT_REGION=us-east-1 \
   --env S3_BUCKET_NAME=azurefire-tls \
@@ -139,6 +158,13 @@ docker run \
   --publish 80:80 \
   --name nginx \
   quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
+EOF
+
+sudo systemctl daemon-reload
+for UNIT in azurefire-tls azurefire-nginx pushbot; do
+  sudo systemctl enable ${UNIT}
+  sudo systemctl start ${UNIT}
+done
 
 # Output service versions for the Slack notification
 
