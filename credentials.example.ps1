@@ -10,6 +10,9 @@ $env:DECODE_AWS_ACCESS_KEY_ID = ''
 $env:DECODE_AWS_SECRET_ACCESS_KEY = ''
 $env:DECODE_AWS_REGION = $env:AWS_DEFAULT_REGION
 
+# Allocation ID of an Elastic IP address bound to azurefire hosts
+$env:ELASTIC_IP_ID = ''
+
 # Used for az-infra notifications
 $env:SLACK_WEBHOOK_URL = ''
 

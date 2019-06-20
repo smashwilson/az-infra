@@ -12,6 +12,9 @@ export DECODE_AWS_ACCESS_KEY_ID=
 export DECODE_AWS_SECRET_ACCESS_KEY=
 export DECODE_AWS_REGION="${AWS_DEFAULT_REGION}"
 
+# Allocation ID of an Elastic IP address bound to azurefire hosts
+export ELASTIC_IP_ID=
+
 # Used for az-infra notifications
 export SLACK_WEBHOOK_URL=
 

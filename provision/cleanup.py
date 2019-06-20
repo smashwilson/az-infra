@@ -1,6 +1,6 @@
 import traceback
 
-from provision.connection import ec2, elb
+from provision.connection import ec2
 from provision.output import info, success, error
 
 def rollback(context):
@@ -65,16 +65,16 @@ def retire(context):
 
     had_failure = False
 
-    pushbot_instances = ec2.instances.filter(
+    az_instances = ec2.instances.filter(
         Filters=[
-            {'Name': 'tag:Purpose', 'Values': ['pushbot']},
+            {'Name': 'tag:Purpose', 'Values': ['azinfra']},
             {'Name': 'instance-state-name', 'Values': ['pending', 'running']}
         ]
     )
-    pushbot_security_groups = ec2.security_groups.filter(
+    az_security_groups = ec2.security_groups.filter(
         Filters=[{'Name': 'tag:Purpose', 'Values': ['pushbot']}]
     )
-    pushbot_key_pairs = ec2.key_pairs.filter(
+    az_key_pairs = ec2.key_pairs.filter(
         Filters=[{'Name': 'key-name', 'Values': ['azurefire*']}]
     )
 
@@ -82,21 +82,19 @@ def retire(context):
     pushbot_rds_rules = rds_security_group.ip_permissions
 
     if context.instance:
-        prior_instances = [i for i in pushbot_instances if i.id != context.instance.id]
+        prior_instances = [i for i in az_instances if i.id != context.instance.id]
     else:
-        prior_instances = list(pushbot_instances)
-
-    existing_targets = context.elb_targets
+        prior_instances = list(az_instances)
 
     if context.security_group:
-        prior_security_groups = [g for g in pushbot_security_groups if g.id != context.security_group.id]
+        prior_security_groups = [g for g in az_security_groups if g.id != context.security_group.id]
     else:
-        prior_security_groups = list(pushbot_security_groups)
+        prior_security_groups = list(az_security_groups)
 
     if context.key_pair:
-        prior_key_pairs = [k for k in pushbot_key_pairs if k.name != context.key_pair.name]
+        prior_key_pairs = [k for k in az_key_pairs if k.name != context.key_pair.name]
     else:
-        prior_key_pairs = list(pushbot_key_pairs)
+        prior_key_pairs = list(az_key_pairs)
 
     prior_rds_rules = []
     for r in pushbot_rds_rules:
@@ -117,13 +115,6 @@ def retire(context):
             return '1 ' + noun
         else:
             return '{} {}s'.format(len(collection), noun)
-
-    info('deregistering ' + plural('existing load balancer target', existing_targets))
-    if existing_targets:
-        elb.deregister_instances_from_load_balancer(
-            LoadBalancerName=context.config.loadbalancer_name,
-            Instances=[{'InstanceId': each['InstanceId']} for each in existing_targets]
-        )
 
     info('deleting ' + plural('prior key pair', prior_key_pairs))
     for k in prior_key_pairs:
