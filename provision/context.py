@@ -12,6 +12,8 @@ class Context:
         self.security_group = None
         self.instance = None
 
+        self.az_coordinator_download_url = None
+
     def make_name(self, base):
         return 'azurefire_' + base + '_' + str(self.config.resource_id)
 

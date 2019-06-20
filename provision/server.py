@@ -4,6 +4,9 @@ import shutil
 import socket
 import subprocess
 import time
+import json
+import re
+import urllib.request
 
 from provision import template
 from provision.connection import ec2
@@ -113,6 +116,24 @@ def bootstrap(context):
     """
     Connect to the EC2 instance over SSH and pipe the bootstrapping script to bash.
     """
+
+    info('locating the download URL for the latest az-coordinator release')
+
+    az_coordinator_download_url = None
+    req = urllib.request.Request(
+        url='https://api.github.com/repos/smashwilson/az-coordinator/releases/latest',
+        headers={
+            'Accept': 'application/vnd.github.v3+json',
+            'User-agent': 'smashwilson az-infra'
+        }
+    )
+    with urllib.request.urlopen(req) as resp:
+        body = json.load(resp)
+        for asset in body['assets']:
+            if re.match(r'linux_amd64\.tar\.gz$', asset['name']):
+                context.az_coordinator_download_url = asset['browser_download_url']
+    if not context.az_coordinator_download_url:
+        raise RuntimeError("Unable to find a Linux binary in the latest az-coordinator release")
 
     info('generating bootstrapping script from template')
     script = template.render(context, 'bootstrap.sh.j2')
