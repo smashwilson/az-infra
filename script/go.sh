@@ -3,7 +3,11 @@
 
 set -euo pipefail
 
-source ./credentials.sh
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# shellcheck source=script/common.sh
+source "${ROOT}/script/common.sh"
+load_credentials
 
 docker build -t azurefire-infra:local .
 clear
@@ -19,5 +23,5 @@ docker run --rm \
   -e LE_EMAIL \
   -e SLACK_WEBHOOK_URL \
   -e MAGICAL_WEAK_SPOT_TOKEN \
-  -v $(pwd)/out:/usr/src/app/out:rw \
+  -v "$(pwd)/out:/usr/src/app/out:rw" \
   azurefire-infra:local "$@"

@@ -1,3 +1,5 @@
+#!/bin/sh
+#
 # Copy to credentials.sh
 
 # AWS account credentials
@@ -5,6 +7,7 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 export AWS_DEFAULT_REGION=us-east-1
 
+# Used for script/decode to decode AWS error messages
 export DECODE_AWS_ACCESS_KEY_ID=
 export DECODE_AWS_SECRET_ACCESS_KEY=
 
@@ -12,7 +15,8 @@ export DECODE_AWS_SECRET_ACCESS_KEY=
 export LE_EMAIL=whatever@somewhere.com
 
 # Database connection
-export POSTGRES_URL=postgres://me:shhh@localhost/dbname
+export PUSHBOT_POSTGRES_URL=postgres://me:shhh@localhost/pushbot
+export COORDINATOR_POSTGRES_URL=postgres://me:shhh@localhost/coordinator
 
 # Account tokens and API keys
 export SLACK_TOKEN=
