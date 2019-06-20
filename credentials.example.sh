@@ -2,7 +2,7 @@
 #
 # Copy to credentials.sh
 
-# AWS account credentials
+# AWS account credentials used for provisioning
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 export AWS_DEFAULT_REGION=us-east-1
@@ -10,22 +10,16 @@ export AWS_DEFAULT_REGION=us-east-1
 # Used for script/decode to decode AWS error messages
 export DECODE_AWS_ACCESS_KEY_ID=
 export DECODE_AWS_SECRET_ACCESS_KEY=
+export DECODE_AWS_REGION="${AWS_DEFAULT_REGION}"
 
-# Let's Encrypt account information
-export LE_EMAIL=whatever@somewhere.com
-
-# Database connection
-export PUSHBOT_POSTGRES_URL=postgres://me:shhh@localhost/pushbot
-export COORDINATOR_POSTGRES_URL=postgres://me:shhh@localhost/coordinator
-
-# Account tokens and API keys
-export SLACK_TOKEN=
-export TRAVIS_TOKEN=
+# Used for az-infra notifications
 export SLACK_WEBHOOK_URL=
-export DARKSKY_APIKEY=
-export GOOGLE_CSE_ID=
-export GOOGLE_CSE_KEY=
 
-# Set this to something nice and random so random people can't take down your
-# bot with a well-placed DELETE request
-export MAGICAL_WEAK_SPOT_TOKEN=
+# az-coordinator options
+export COORDINATOR_LISTEN_ADDRESS=0.0.0.0:8443
+export COORDINATOR_POSTGRES_URL=postgres://me:shhh@localhost/coordinator
+export COORDINATOR_AWS_REGION="${AWS_DEFAULT_REGION}"
+export COORDINATOR_DOCKER_API_VERSION=1.38
+export COORDINATOR_ALLOWED_ORIGIN=https://pushbot.party
+export COORDINATOR_MASTER_KEY_ID= # valid KMS master key ID
+export COORDINATOR_AUTH_TOKEN= # something arbitrary and random
