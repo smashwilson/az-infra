@@ -4,3 +4,4 @@ credentials.md
 /*.sh
 !/*.example.ps1
 !/*.example.sh
+out/
