@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 
 # shellcheck source=script/common.sh
 source "${ROOT}/script/common.sh"

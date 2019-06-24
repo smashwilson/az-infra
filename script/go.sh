@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 
 # shellcheck source=script/common.sh
 source "${ROOT}/script/common.sh"
@@ -15,13 +15,14 @@ docker run --rm \
   -e AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION \
-  -e POSTGRES_URL \
-  -e SLACK_TOKEN \
-  -e DARKSKY_APIKEY \
-  -e GOOGLE_CSE_ID \
-  -e GOOGLE_CSE_KEY \
-  -e LE_EMAIL \
+  -e ELASTIC_IP_ID \
   -e SLACK_WEBHOOK_URL \
-  -e MAGICAL_WEAK_SPOT_TOKEN \
+  -e COORDINATOR_LISTEN_ADDRESS \
+  -e COORDINATOR_POSTGRES_URL \
+  -e COORDINATOR_AWS_REGION \
+  -e COORDINATOR_DOCKER_API_VERSION \
+  -e COORDINATOR_ALLOWED_ORIGIN \
+  -e COORDINATOR_MASTER_KEY_ID \
+  -e COORDINATOR_AUTH_TOKEN \
   -v "$(pwd)/out:/usr/src/app/out:rw" \
   azurefire-infra:local "$@"
