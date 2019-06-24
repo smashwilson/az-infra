@@ -72,7 +72,7 @@ def retire(context):
         ]
     )
     az_security_groups = ec2.security_groups.filter(
-        Filters=[{'Name': 'tag:Purpose', 'Values': ['pushbot']}]
+        Filters=[{'Name': 'tag:Purpose', 'Values': ['azinfra']}]
     )
     az_key_pairs = ec2.key_pairs.filter(
         Filters=[{'Name': 'key-name', 'Values': ['azurefire*']}]
