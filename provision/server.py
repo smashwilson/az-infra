@@ -9,7 +9,7 @@ import re
 import urllib.request
 
 from provision import template
-from provision.connection import ec2
+from provision.connection import ec2, client
 from provision.output import info, success, error
 
 def provision(context):
@@ -130,7 +130,7 @@ def bootstrap(context):
     with urllib.request.urlopen(req) as resp:
         body = json.load(resp)
         for asset in body['assets']:
-            if re.match(r'linux_amd64\.tar\.gz$', asset['name']):
+            if re.match(r'.*linux_amd64\.tar\.gz$', asset['name']):
                 context.az_coordinator_download_url = asset['browser_download_url']
     if not context.az_coordinator_download_url:
         raise RuntimeError("Unable to find a Linux binary in the latest az-coordinator release")
@@ -146,13 +146,13 @@ def bootstrap(context):
         'core@{}'.format(context.instance.public_ip_address),
         '/bin/bash'
     ]
-    process = subprocess.run(ssh, input=script, timeout=context.config.bootstrap_timeout)
+    process = subprocess.run(ssh, input=script.encode('utf-8'), timeout=context.config.bootstrap_timeout)
 
     if process.returncode == 0:
         success('bootstrapping completed successfully')
     else:
         error('bootstrapping script failure:')
-        error('exit status: {}'.format(pipe.returncode))
+        error('exit status: {}'.format(process.returncode))
         raise RuntimeError('bootstrapping failure')
 
 def bind_elastic_ip(context):
@@ -161,7 +161,7 @@ def bind_elastic_ip(context):
     """
 
     info('associating the elastic IP with the new instance')
-    ec2.associate_address(
+    client.associate_address(
         AllocationId=context.config.elastic_ip_id,
         InstanceId=context.instance.id,
         AllowReassociation=True,
