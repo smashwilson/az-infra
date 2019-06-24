@@ -4,7 +4,6 @@ import traceback
 from provision.context import Context
 from provision.config import Action
 from provision.output import error
-from provision import loadbalancer
 from provision import server
 from provision import cleanup
 from provision import notify
