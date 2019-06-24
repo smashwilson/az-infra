@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
+
 multipull()
 {
   local IMAGES="$@"
