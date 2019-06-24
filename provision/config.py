@@ -35,6 +35,7 @@ class Config:
         self.coordinator_master_key_id = os.environ['COORDINATOR_MASTER_KEY_ID']
         self.coordinator_auth_token = os.environ['COORDINATOR_AUTH_TOKEN']
 
+        self.build_id = os.environ.get('GITHUB_SHA', '<manual>')
         self.resource_id = int(time.time())
 
         parser = argparse.ArgumentParser()
