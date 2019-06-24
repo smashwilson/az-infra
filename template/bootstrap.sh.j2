@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -xeuo pipefail
 
 printf ">> Trusting SSH keys.\n"
 curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
@@ -14,8 +14,13 @@ printf ">> Setting server timezone.\n"
 sudo timedatectl set-timezone UTC
 printf ">> Server timezone set.\n"
 
-printf ">> Downloading az-coordinator.\n"
-curl --silent '{{ az_coordinator.download_url }}' --output /home/core/az-coordinator
+printf ">> Downloading and extracting az-coordinator.\n"
+curl --silent --location '{{ az_coordinator.download_url }}' --output /home/core/az-coordinator.tar.gz
+tar zxvf /home/core/az-coordinator.tar.gz
+sudo mkdir -p /opt/bin/
+sudo mv /home/core/az-coordinator /opt/bin/az-coordinator
+sudo chown :core /opt/bin/az-coordinator
+sudo chmod ug+rx /opt/bin/az-coordinator
 printf ">> az-coordinator downloaded.\n"
 
 printf ">> Writing az-coordinator options.\n"
