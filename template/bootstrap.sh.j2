@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xeuo pipefail
+set -euo pipefail
 
 printf ">> Trusting SSH keys.\n"
 curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
