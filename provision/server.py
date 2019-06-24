@@ -141,7 +141,12 @@ def bootstrap(context):
         'core@{}'.format(context.instance.public_ip_address),
         '/bin/bash'
     ]
-    process = subprocess.run(ssh, input=script.encode('utf-8'), timeout=context.config.bootstrap_timeout)
+    process = subprocess.run(
+        ssh,
+        input=script.encode('utf-8'),
+        timeout=context.config.bootstrap_timeout,
+        stderr=subprocess.PIPE,
+    )
 
     if process.returncode == 0:
         success('bootstrapping completed successfully')
