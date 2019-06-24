@@ -3,6 +3,9 @@ import json
 import os
 
 def _send_to_slack(context, request_body):
+    if not context.config.notifications_enabled:
+        return
+
     req = urllib.request.Request(
         method='POST',
         url=context.config.slack_webhook_url,
@@ -37,7 +40,6 @@ def failure(context, formatted_tb):
                 'fallback': 'azurefire infrastructure deployment failed.',
                 'color': 'danger',
                 'title': 'Azurefire infrastructure deployment failed.',
-                'title_link': context.build_href(),
                 'text': "Here's the stack:\n```\n{}\n```\n".format(formatted_tb),
                 'mrkdwn_in': ['text']
             }
