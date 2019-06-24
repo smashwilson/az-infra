@@ -8,7 +8,9 @@ if [ -z "${GITHUB_REF:-}" ]; then
 fi
 
 SHORT_REF=$(basename ${GITHUB_REF})
-IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
+if [ -z "${IMAGE_NAME:-}" ]; then
+  IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
+fi
 
 if [ "${GITHUB_REF:-}" = "refs/heads/master" ]; then IMAGE_TAG=latest; else IMAGE_TAG="${SHORT_REF}"; fi
 
