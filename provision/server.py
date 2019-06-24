@@ -21,7 +21,6 @@ def provision(context):
     security_group(context)
     instance(context)
     bootstrap(context)
-    bind_elastic_ip(context)
 
 def ssh_key(context):
     """
@@ -95,19 +94,15 @@ def instance(context):
     )[0]
 
     info('waiting for instance {} to launch'.format(context.instance.id))
-    context.instance.wait_until_running();
+    context.instance.wait_until_running()
+    bind_elastic_ip(context)
     context.instance.reload()
 
-    info('authorizing traffic to RDS security group {}'.format(context.config.rds_security_group_id))
-    rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
-    rds_security_group.authorize_ingress(
-        IpProtocol='tcp',
-        FromPort=5432,
-        ToPort=5432,
-        CidrIp='{}/32'.format(context.instance.public_ip_address),
-    )
+    # Give the ssh daemon a chance to restart after network changes
+    time.sleep(5)
 
-    info('waiting for instance {} to listen on port 22'.format(context.instance.id))
+    info('waiting for instance {} to listen at {}:22'.format(
+        context.instance.id, context.instance.public_ip_address))
     _wait_for_ssh(context.instance.public_ip_address, context.config.server_ssh_timeout)
     success('instance {} has booted and is listening at {}:22'.format(
         context.instance.id, context.instance.public_ip_address))
@@ -152,6 +147,7 @@ def bootstrap(context):
         success('bootstrapping completed successfully')
     else:
         error('bootstrapping script failure:')
+        error('stderr:\n{}'.format(process.stderr.decode('utf-8')))
         error('exit status: {}'.format(process.returncode))
         raise RuntimeError('bootstrapping failure')
 

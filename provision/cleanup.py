@@ -19,21 +19,6 @@ def rollback(context):
             had_failure = True
             error('unable to delete key pair\n{}'.format(traceback.format_exc()))
 
-    if context.instance:
-        try:
-            info('revoking RDS security group ingress rule')
-            rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
-            rds_security_group.revoke_ingress(
-                IpProtocol='tcp',
-                FromPort=5432,
-                ToPort=5432,
-                CidrIp='{}/32'.format(context.instance.public_ip_address),
-            )
-            info('RDS security group ingress rule revoked')
-        except:
-            had_failure = True
-            error('unable to remove RDS security group rule\n{}'.format(traceback.format_exc()))
-
         try:
             info('terminating instance')
             context.instance.terminate()
@@ -78,9 +63,6 @@ def retire(context):
         Filters=[{'Name': 'key-name', 'Values': ['azurefire*']}]
     )
 
-    rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
-    pushbot_rds_rules = rds_security_group.ip_permissions
-
     if context.instance:
         prior_instances = [i for i in az_instances if i.id != context.instance.id]
     else:
@@ -96,20 +78,6 @@ def retire(context):
     else:
         prior_key_pairs = list(az_key_pairs)
 
-    prior_rds_rules = []
-    for r in pushbot_rds_rules:
-        ip_protocol = r['IpProtocol']
-        from_port = r['FromPort']
-        to_port = r['ToPort']
-        for ip_range in r['IpRanges']:
-            if not context.instance or ip_range['CidrIp'] != context.instance.public_ip_address + '/32':
-                prior_rds_rules.append({
-                    'IpProtocol': ip_protocol,
-                    'FromPort': from_port,
-                    'ToPort': to_port,
-                    'CidrIp': ip_range['CidrIp']
-                })
-
     def plural(noun, collection):
         if len(collection) == 1:
             return '1 ' + noun
@@ -123,14 +91,6 @@ def retire(context):
         except:
             had_failure = True
             error('unable to delete key pair\n{}'.format(traceback.format_exc()))
-
-    info('revoking ' + plural('RDS security ingress rule', prior_rds_rules))
-    for r in prior_rds_rules:
-        try:
-            rds_security_group.revoke_ingress(**r)
-        except:
-            had_failure = True
-            error('unable to revoke RDS ingress rule\n{}'.format(traceback.format_exc()))
 
     info('terminating ' + plural('prior instance', prior_instances))
     for i in prior_instances:
