@@ -4,7 +4,6 @@ import traceback
 from provision.context import Context
 from provision.config import Action
 from provision.output import error
-from provision import loadbalancer
 from provision import server
 from provision import cleanup
 from provision import notify
@@ -13,7 +12,6 @@ context = Context(sys.argv)
 if context.config.action == Action.PROVISION:
     try:
         notify.begin(context)
-        loadbalancer.provision(context)
         server.provision(context)
         cleanup.retire(context)
     except:
@@ -26,7 +24,6 @@ if context.config.action == Action.PROVISION:
         notify.success(context)
 elif context.config.action == Action.DELETE:
     try:
-        loadbalancer.provision(context)
         cleanup.retire(context)
     except:
         error('unable to delete resources\n{}'.format(traceback.format_exc()))

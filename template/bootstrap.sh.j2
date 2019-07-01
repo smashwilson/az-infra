@@ -2,174 +2,33 @@
 
 set -euo pipefail
 
+printf ">> Trusting SSH keys.\n"
 curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
+printf ">> SSH keys trusted.\n"
 
-multipull()
-{
-  local IMAGES="$@"
-  local PIDS=""
-  local FAILED="false"
-
-  mkdir -p /tmp/pulls
-  for IMAGE in ${IMAGES}; do
-    local LOGNAME=$(printf "%s" ${IMAGE} | tr -c -s '[:alnum:]' '_')
-    docker pull "${IMAGE}" >/dev/null 2>/tmp/pulls/${LOGNAME}.err &
-    PIDS="${PIDS} $!"
-  done
-
-  printf "Waiting for pulls to complete: "
-
-  for PID in ${PIDS}; do
-    set +e
-    wait ${PID}
-    local STATUS=$?
-    set -e
-
-    if [ "${STATUS}" != "0" ]; then
-      printf "X"
-      FAILED="true"
-    else
-      printf "."
-    fi
-  done
-
-  if [ "${FAILED}" = "false" ]; then
-    printf " ok\n"
-    return 0
-  else
-    printf " err\n"
-    cat /tmp/pulls/*.err
-    return 1
-  fi
-}
-
-report_versions()
-{
-  local SERVICE_NAME=${1}
-  local SERVICE_BRANCH=${2}
-
-  docker inspect \
-    --format ">> ${SERVICE_NAME} {{ '.Id' | mustache }} {{ 'index .Config.Labels \\"party.pushbot.commit\\"' | mustache }}" \
-    quay.io/smashwilson/${SERVICE_NAME}:${SERVICE_BRANCH}
-}
-
-echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCz8jAdEFd17WxD6nGF0Vh6LqiNfHwom8xNsHAs6vrdLjoJ1ryca2OsbkP4BVrdN0esMjTYeHPCR6APoYXR95DevZ7OM9Yd35M3JaB+kT6u6aaesI0GQBh8WPI7vokkZFi1IbG31QyNSjNAkASkZu/6knOHlJfZCRl0/3X12CWa//0ZjBDymnv5vSoQ9uXCe3KYj7y1bpCn2QSzR7FXBqsvaxX6FKGAP5vZNY0HRf6cBNAGxoScSO4Y6miecqIzmx6FOtQ7JILjmeVIlpHBEcUy64KlXUmi3CCWAg2VvD1GFRL/tV8pm7ZZHDpN6SHjaWDsPQsSMl9PIlhYIBjl1SHbDZo6QnAO/i3XvROgu7T6w/5ujf7AFIWSWtePdyYpp75WreBN6VALEYWWjbIPQIUDvYCJ/gGJhZqv+ZifsmfLPhIwMQQNTMVsugUJ6qVrVtJl6v8Xn8suup5Cnsc7M4scxF0WBQ8Mgq+h75fHg/upA3yAi/bQl5YNGHlpZLB70SFfVIo9TujvX+O2o/4EDwRKToWHgN8jxrx1hnuiLPkxZwqJtqc8yzrCtjzZ4I4v1Ep9wS3sLOZwyAJwp2FovE2Zlf6+8yvC/42bq3cdL9ql2tQkYHhT+S7GvClyvPd4C1TqlLySFqAwyxPLWHSV4EZki8m0IZHC2ew1DcP+bPXGnw== smashwilson@C02SR1F1G8WL' | sudo update-ssh-keys -a core
-
+printf ">> Enabling Docker service.\n"
 sudo systemctl enable docker.service
+printf ">> Docker service enabled.\n"
+
+printf ">> Setting server timezone.\n"
 sudo timedatectl set-timezone UTC
+printf ">> Server timezone set.\n"
 
-# One-time Docker preparation
+printf ">> Downloading and extracting az-coordinator.\n"
+curl --silent --location '{{ az_coordinator.download_url }}' --output /home/core/az-coordinator.tar.gz
+tar zxvf /home/core/az-coordinator.tar.gz
+sudo mkdir -p /opt/bin/
+sudo mv /home/core/az-coordinator /opt/bin/az-coordinator
+sudo chown :core /opt/bin/az-coordinator
+sudo chmod ug+rx /opt/bin/az-coordinator
+printf ">> az-coordinator downloaded.\n"
 
-multipull \
-  quay.io/smashwilson/pushbot:{{ pushbot.tag }} \
-  quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
-
-docker network create hubot
-
-# Install a timer to automatically renew the TLS certificates.
-
-cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.service > /dev/null
-[Unit]
-Description=Re-issue TLS certificate if the current certificate will expire within a week.
-Requires=docker.service
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/docker run --rm \
-  --env EMAIL={{ letsencrypt.email }} \
-  --env LE_PRODUCTION=yes \
-  --env TRAVIS_TOKEN={{ secrets.travis_token }} \
-  --env AWS_DEFAULT_REGION=us-east-1 \
-  --env S3_BUCKET_NAME=azurefire-tls \
-  --env KMS_KEY_ID={{ secrets.kms_key_id }} \
-  --log-driver=awslogs \
-  --log-opt awslogs-group=azurefire-tls \
-  --log-opt awslogs-stream={{ resource.id }} \
-  quay.io/smashwilson/azurefire-tls:{{ tls.tag }}
+printf ">> Writing az-coordinator options.\n"
+cat <<EOF >/home/core/options.json
+{{ az_coordinator.options_json }}
 EOF
+printf ">> az-coordinator options written.\n"
 
-cat <<EOF | sudo tee /etc/systemd/system/azurefire-tls.timer > /dev/null
-[Unit]
-Description=Run azurefire-tls.service nightly
-
-[Timer]
-OnCalendar=*-*-* 01:00:00
-
-[Install]
-WantedBy=timers.target
-EOF
-
-# Launch containers
-
-cat <<EOF | sudo tee /etc/systemd/system/pushbot.service > /dev/null
-[Unit]
-Description=Here To Protect Us
-After=docker.service
-Requires=docker.service
-
-[Service]
-TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill pushbot
-ExecStartPre=-/usr/bin/docker rm pushbot
-ExecStart=/usr/bin/docker run \
-  --read-only \
-  --detach \
-  --network hubot \
-  --env DATABASE_URL="{{ secrets.postgres_url }}" \
-  --env HUBOT_SLACK_TOKEN="{{ secrets.slack_token }}" \
-  --env HUBOT_MARKOV_STORAGE=postgres \
-  --env HUBOT_MARKOV_LEARN_MIN=2 \
-  --env HUBOT_MARKOV_GENERATE_MAX=100 \
-  --env DND_PUBLIC_CHANNEL="{{ pushbot.dnd_public_channel }}" \
-  --env HUBOT_AUTH_ADMIN="{{ pushbot.admins }}" \
-  --env HUBOT_BETRAY_IMMUNE="{{ pushbot.betray_immune }}" \
-  --env HUBOT_WEATHER_APIKEY="{{ secrets.darksky_apikey }}" \
-  --env HUBOT_GOOGLE_CSE_ID="{{ secrets.google_cse_id }}" \
-  --env HUBOT_GOOGLE_CSE_KEY="{{ secrets.google_cse_key }}" \
-  --env HUBOT_GEOCODING_APIKEY="{{ secrets.google_cse_key }}" \
-  --env PRIOR_ADDRESSES="{{ pushbot.prior_addresses }}" \
-  --env SLACK_CLIENT_ID="{{ secrets.slack_client_id }}" \
-  --env SLACK_CLIENT_SECRET="{{ secrets.slack_client_secret }}" \
-  --env SLACK_TEAM_ID="{{ pushbot.slack_team_id }}" \
-  --env MAGICAL_WEAK_SPOT_TOKEN="{{ secrets.magical_weak_spot_token }}" \
-  --env SESSION_SECRET="{{ secrets.session_secret }}" \
-  --env API_BASE_URL="{{ pushbot.api_base_url }}" \
-  --env WEB_BASE_URL="{{ pushbot.web_base_url }}" \
-  --name pushbot \
-  quay.io/smashwilson/pushbot:{{ pushbot.tag }}
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat <<EOF | sudo tee /etc/systemd/system/azurefire-nginx.service > /dev/null
-[Unit]
-Description=nginx
-After=docker.service
-Requires=docker.service
-
-[Service]
-TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill nginx
-ExecStartPre=-/usr/bin/docker rm nginx
-ExecStart=/usr/bin/docker run \
-  --network hubot \
-  --env AWS_DEFAULT_REGION=us-east-1 \
-  --env S3_BUCKET_NAME=azurefire-tls \
-  --publish 443:443 \
-  --publish 80:80 \
-  --name nginx \
-  quay.io/smashwilson/azurefire-nginx:{{ nginx.tag }}
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable azurefire-tls.timer azurefire-nginx.service pushbot.service
-sudo systemctl start azurefire-tls.timer azurefire-nginx.service pushbot.service
-
-# Output service versions for the Slack notification
-
-report_versions pushbot "{{ pushbot.tag }}"
-report_versions azurefire-nginx "{{ nginx.tag }}"
+printf ">> Bootstrapping host.\n"
+sudo AZ_OPTIONS=/home/core/options.json az-coordinator -v init
+printf ">> Host bootstrapped.\n"

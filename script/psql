@@ -1,8 +1,0 @@
-#!/bin/bash
-# Launch a shell on pushbot's PostgreSQL database.
-
-source ./credentials.sh
-
-printf "Connecting to Postgres.\n"
-exec docker run --rm -it \
-  postgres:9.6 psql "${POSTGRES_URL}"

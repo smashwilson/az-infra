@@ -1,9 +1,6 @@
 {
-  "loadbalancer": {
-    "name": "azurefire"
-  },
   "server": {
-    "image_id": "ami-ad593cbb",
+    "image_id": "ami-016a8193f03cf4a79",
     "instance_type": "t2.micro",
     "ssh_timeout": 480,
     "instance_profile_arn": "arn:aws:iam::497481419567:instance-profile/azurefire-host",
@@ -14,20 +11,5 @@
   },
   "bootstrap": {
     "timeout": 480
-  },
-  "pushbot": {
-    "tag": "latest",
-    "admins": "U02D23B7J,U02D23G6N",
-    "betray_immune": "U02D23B7J,U02D23G6N,U02D25HJG,U02D1CX67",
-    "dnd_public_channel": "C31NEFF89",
-    "slack_team_id": "T02D23B7G",
-    "api_base_url": "https://api.pushbot.party",
-    "web_base_url": "https://pushbot.party"
-  },
-  "azurefire-nginx": {
-    "tag": "latest"
-  },
-  "azurefire-tls": {
-    "tag": "latest"
   }
 }

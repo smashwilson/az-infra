@@ -4,9 +4,12 @@ import shutil
 import socket
 import subprocess
 import time
+import json
+import re
+import urllib.request
 
 from provision import template
-from provision.connection import ec2, elb
+from provision.connection import ec2, client
 from provision.output import info, success, error
 
 def provision(context):
@@ -18,7 +21,6 @@ def provision(context):
     security_group(context)
     instance(context)
     bootstrap(context)
-    register(context)
 
 def ssh_key(context):
     """
@@ -57,11 +59,12 @@ def security_group(context):
     info('creating security group {}'.format(security_group_name))
     context.security_group = ec2.create_security_group(
         GroupName=security_group_name,
-        Description='Permit SSH access during provisioning',
+        Description='Azurefire host firewall',
     )
+
     context.security_group.create_tags(Tags=context.make_tags())
-    info('authorizing SSH, HTTP and HTTPS access')
-    for port in [22, 80, 443]:
+    info('authorizing SSH, HTTP and HTTPS access to nginx and az-coordinator')
+    for port in [22, 80, 443, 8443]:
         context.security_group.authorize_ingress(
             IpProtocol='tcp',
             FromPort=port,
@@ -77,34 +80,30 @@ def instance(context):
 
     info('creating instance')
     context.instance = ec2.create_instances(
-        ImageId=context.config.image_id,
+        ImageId=context.config.server_image_id,
         MinCount=1,
         MaxCount=1,
         KeyName=context.key_pair.key_name,
         SecurityGroups=[context.security_group.group_name],
-        InstanceType=context.config.instance_type,
-        IamInstanceProfile={'Arn': context.config.instance_profile_arn},
-        Placement={'AvailabilityZone': context.config.instance_az},
+        InstanceType=context.config.server_instance_type,
+        IamInstanceProfile={'Arn': context.config.server_instance_profile_arn},
+        Placement={'AvailabilityZone': context.config.server_instance_az},
         TagSpecifications=[
             {'ResourceType': 'instance', 'Tags': context.make_tags()}
         ]
     )[0]
 
     info('waiting for instance {} to launch'.format(context.instance.id))
-    context.instance.wait_until_running();
+    context.instance.wait_until_running()
+    bind_elastic_ip(context)
     context.instance.reload()
 
-    info('authorizing traffic to RDS security group {}'.format(context.config.rds_security_group_id))
-    rds_security_group = ec2.SecurityGroup(context.config.rds_security_group_id)
-    rds_security_group.authorize_ingress(
-        IpProtocol='tcp',
-        FromPort=5432,
-        ToPort=5432,
-        CidrIp='{}/32'.format(context.instance.public_ip_address),
-    )
+    # Give the ssh daemon a chance to restart after network changes
+    time.sleep(5)
 
-    info('waiting for instance {} to listen on port 22'.format(context.instance.id))
-    _wait_for_ssh(context.instance.public_ip_address, context.config.ssh_attempts)
+    info('waiting for instance {} to listen at {}:22'.format(
+        context.instance.id, context.instance.public_ip_address))
+    _wait_for_ssh(context.instance.public_ip_address, context.config.server_ssh_timeout)
     success('instance {} has booted and is listening at {}:22'.format(
         context.instance.id, context.instance.public_ip_address))
 
@@ -112,6 +111,24 @@ def bootstrap(context):
     """
     Connect to the EC2 instance over SSH and pipe the bootstrapping script to bash.
     """
+
+    info('locating the download URL for the latest az-coordinator release')
+
+    az_coordinator_download_url = None
+    req = urllib.request.Request(
+        url='https://api.github.com/repos/smashwilson/az-coordinator/releases/latest',
+        headers={
+            'Accept': 'application/vnd.github.v3+json',
+            'User-agent': 'smashwilson az-infra'
+        }
+    )
+    with urllib.request.urlopen(req) as resp:
+        body = json.load(resp)
+        for asset in body['assets']:
+            if re.match(r'.*linux_amd64\.tar\.gz$', asset['name']):
+                context.az_coordinator_download_url = asset['browser_download_url']
+    if not context.az_coordinator_download_url:
+        raise RuntimeError("Unable to find a Linux binary in the latest az-coordinator release")
 
     info('generating bootstrapping script from template')
     script = template.render(context, 'bootstrap.sh.j2')
@@ -124,41 +141,33 @@ def bootstrap(context):
         'core@{}'.format(context.instance.public_ip_address),
         '/bin/bash'
     ]
-    pipe = subprocess.Popen(
+    process = subprocess.run(
         ssh,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
+        input=script.encode('utf-8'),
+        timeout=context.config.bootstrap_timeout,
         stderr=subprocess.PIPE,
-        encoding='utf-8',
-        universal_newlines=False
-    )
-    outs, errs = pipe.communicate(
-        script,
-        timeout=context.config.bootstrap_timeout
     )
 
-    if pipe.returncode == 0:
-        context.accept_bootstrap_stdout(outs)
+    if process.returncode == 0:
         success('bootstrapping completed successfully')
     else:
         error('bootstrapping script failure:')
-        error('exit status: {}'.format(pipe.returncode))
-        error('stdout:\n{}'.format(outs))
-        error('stderr:\n{}'.format(errs))
-
+        error('stderr:\n{}'.format(process.stderr.decode('utf-8')))
+        error('exit status: {}'.format(process.returncode))
         raise RuntimeError('bootstrapping failure')
 
-def register(context):
+def bind_elastic_ip(context):
     """
-    Register the new instance with the load balancer.
+    Associate the elastic IP with the instance.
     """
 
-    info('registering instance with the load balancer')
-    elb.register_instances_with_load_balancer(
-        LoadBalancerName=context.config.loadbalancer_name,
-        Instances=[{'InstanceId': context.instance.id}]
+    info('associating the elastic IP with the new instance')
+    client.associate_address(
+        AllocationId=context.config.elastic_ip_id,
+        InstanceId=context.instance.id,
+        AllowReassociation=True,
     )
-    success('instance is receiving traffic')
+    success('instance is associated with the elastic IP')
 
 def _wait_for_ssh(public_ip, attempts):
     """

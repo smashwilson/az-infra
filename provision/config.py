@@ -15,45 +15,29 @@ class Config:
         with open('config.json', 'r') as cf:
             public_config = json.load(cf)
 
-        self.loadbalancer_name = public_config['loadbalancer']['name']
-
-        self.image_id = public_config['server']['image_id']
-        self.instance_type = public_config['server']['instance_type']
-        self.ssh_attempts = public_config['server']['ssh_timeout']
-        self.instance_profile_arn = public_config['server']['instance_profile_arn']
-        self.instance_az = public_config['server']['instance_az']
-
+        # Loaded from config.json
+        self.server_image_id = public_config['server']['image_id']
+        self.server_instance_type = public_config['server']['instance_type']
+        self.server_ssh_timeout = public_config['server']['ssh_timeout']
+        self.server_instance_profile_arn = public_config['server']['instance_profile_arn']
+        self.server_instance_az = public_config['server']['instance_az']
         self.rds_security_group_id = public_config['rds']['security_group_id']
         self.bootstrap_timeout = public_config['bootstrap']['timeout']
-        self.pushbot_tag = public_config['pushbot']['tag']
-        self.pushbot_admins = public_config['pushbot']['admins']
-        self.pushbot_betray_immune = public_config['pushbot']['betray_immune']
-        self.pushbot_dnd_public_channel = public_config['pushbot']['betray_immune']
-        self.pushbot_slack_team_id = public_config['pushbot']['slack_team_id']
-        self.pushbot_api_base_url = public_config['pushbot']['api_base_url']
-        self.pushbot_web_base_url = public_config['pushbot']['web_base_url']
 
-        self.azurefire_nginx_tag = public_config['azurefire-nginx']['tag']
-        self.azurefire_tls_tag = public_config['azurefire-tls']['tag']
-
-        self.resource_id = int(time.time())
-        self.build_id = os.environ.get('TRAVIS_BUILD_ID', '0')
-        self.message = os.environ.get('BUILD_CAUSE')
-
-        self.le_email = os.environ['LE_EMAIL']
-        self.kms_key_id = os.environ['KMS_KEY_ID']
-        self.postgres_url = os.environ['POSTGRES_URL']
-        self.slack_token = os.environ['SLACK_TOKEN']
-        self.travis_token = os.environ['TRAVIS_TOKEN']
-        self.slack_client_id = os.environ['SLACK_CLIENT_ID']
-        self.slack_client_secret = os.environ['SLACK_CLIENT_SECRET']
-        self.darksky_apikey = os.environ['DARKSKY_APIKEY']
-        self.google_cse_id = os.environ['GOOGLE_CSE_ID']
-        self.google_cse_key = os.environ['GOOGLE_CSE_KEY']
-        self.session_secret = os.environ['SESSION_SECRET']
-        self.magical_weak_spot_token = os.environ['MAGICAL_WEAK_SPOT_TOKEN']
-
+        # Loaded from credentials.sh
+        self.elastic_ip_id = os.environ['ELASTIC_IP_ID']
         self.slack_webhook_url = os.environ['SLACK_WEBHOOK_URL']
+        self.coordinator_listen_address = os.environ['COORDINATOR_LISTEN_ADDRESS']
+        self.coordinator_postgres_url = os.environ['COORDINATOR_POSTGRES_URL']
+        self.coordinator_aws_region = os.environ['COORDINATOR_AWS_REGION']
+        self.coordinator_docker_api_version = os.environ['COORDINATOR_DOCKER_API_VERSION']
+        self.coordinator_allowed_origin = os.environ['COORDINATOR_ALLOWED_ORIGIN']
+        self.coordinator_master_key_id = os.environ['COORDINATOR_MASTER_KEY_ID']
+        self.coordinator_auth_token = os.environ['COORDINATOR_AUTH_TOKEN']
+
+        self.notifications_enabled = os.environ.get('NOTIFY', 'no') == 'yes'
+        self.build_id = os.environ.get('GITHUB_SHA', '<manual>')
+        self.resource_id = int(time.time())
 
         parser = argparse.ArgumentParser()
         parser.add_argument('-r', '--resource-id', help='Override the resource ID')
