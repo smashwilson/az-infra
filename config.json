@@ -1,7 +1,7 @@
 {
   "server": {
     "image_id": "ami-016a8193f03cf4a79",
-    "instance_type": "t2.micro",
+    "instance_type": "t3.small",
     "ssh_timeout": 480,
     "instance_profile_arn": "arn:aws:iam::497481419567:instance-profile/azurefire-host",
     "instance_az": "us-east-1a"
