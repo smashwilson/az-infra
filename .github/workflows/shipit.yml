@@ -19,3 +19,16 @@ jobs:
       run: script/ci/test
     - name: deploy
       run: script/ci/deploy
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ELASTIC_IP_ID: ${{ secrets.ELASTIC_IP_ID }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        COORDINATOR_POSTGRES_URL: ${{ secrets.COORDINATOR_POSTGRES_URL }}
+        COORDINATOR_MASTER_KEY_ID: ${{ secrets.COORDINATOR_MASTER_KEY_ID }}
+        COORDINATOR_AUTH_TOKEN: ${{ secrets.COORDINATOR_AUTH_TOKEN }}
+        AWS_DEFAULT_REGION: us-east-1
+        COORDINATOR_LISTEN_ADDRESS: 0.0.0.0:8443
+        COORDINATOR_AWS_REGION: us-east-1
+        COORDINATOR_DOCKER_API_VERSION: "1.38"
+        COORDINATOR_ALLOWED_ORIGIN: https://pushbot.party
