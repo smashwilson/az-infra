@@ -1,7 +1,5 @@
 # Azurefire infrastructure
 
-[![Build Status](https://travis-ci.org/smashwilson/azurefire-infra.svg?branch=master)](https://travis-ci.org/smashwilson/azurefire-infra)
-
 Infrastructure for [azurefire.net](https://azurefire.net/) and [pushbot.party](https://pushbot.party/). Hosting for a bunch of services that @smashwilson wants to stash somewhere, deployed to AWS as immutable infrastructure.
 
 ## Services
