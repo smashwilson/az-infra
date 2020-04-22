@@ -16,7 +16,7 @@ jobs:
       with:
         python-version: 3.6
     - name: install dependencies
-      run: pip install
+      run: pip install -r requirements.txt
     - name: test
       run: script/ci/test
     - name: deploy
