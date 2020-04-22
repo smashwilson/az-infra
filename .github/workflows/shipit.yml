@@ -34,3 +34,4 @@ jobs:
         COORDINATOR_AWS_REGION: us-east-1
         COORDINATOR_DOCKER_API_VERSION: "1.38"
         COORDINATOR_ALLOWED_ORIGIN: https://pushbot.party
+        NOTIFY: yes
