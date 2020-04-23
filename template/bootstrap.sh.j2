@@ -3,7 +3,11 @@
 set -euo pipefail
 
 printf ">> Trusting SSH keys.\n"
-curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
+mkdir -p /home/core/.ssh
+touch /home/core/.ssh/authorized_keys
+curl --silent https://github.com/smashwilson.keys >> /home/core/.ssh/authorized_keys
+chmod 0700 /home/core/.ssh
+chmod 0600 /home/core/.ssh/authorized_keys
 printf ">> SSH keys trusted.\n"
 
 printf ">> Enabling Docker service.\n"
