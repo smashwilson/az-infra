@@ -61,6 +61,8 @@ def security_group(context):
         GroupName=security_group_name,
         Description='Azurefire host firewall',
     )
+    # Until security groups have a waiter
+    time.sleep(2)
 
     context.security_group.create_tags(Tags=context.make_tags())
     info('authorizing SSH, HTTP and HTTPS access to nginx and az-coordinator')
