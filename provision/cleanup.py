@@ -10,15 +10,7 @@ def rollback(context):
 
     had_failure = False
 
-    if context.key_pair:
-        try:
-            info('deleting key pair')
-            context.key_pair.delete()
-            info('key pair deleted')
-        except:
-            had_failure = True
-            error('unable to delete key pair\n{}'.format(traceback.format_exc()))
-
+    if context.instance:
         try:
             info('terminating instance')
             context.instance.terminate()
@@ -27,6 +19,15 @@ def rollback(context):
         except:
             had_failure = True
             error('unable to terminate instance\n{}'.format(traceback.format_exc()))
+
+    if context.key_pair:
+        try:
+            info('deleting key pair')
+            context.key_pair.delete()
+            info('key pair deleted')
+        except:
+            had_failure = True
+            error('unable to delete key pair\n{}'.format(traceback.format_exc()))
 
     if context.security_group:
         try:
