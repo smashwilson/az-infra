@@ -9,13 +9,13 @@ Infrastructure for [azurefire.net](https://azurefire.net/) and [pushbot.party](h
 These containers run persistently on the CoreOS host:
 
 * [pushbot](https://github.com/smashwilson/pushbot): A [hubot](https://hubot.github.com/) instance who's here to protect you from the terrible secret of space.
-* [azurefire-nginx](https://github.com/smashwilson/azurefire-nginx): An [nginx](https://nginx.org/en/docs/) server that terminates incoming TLS connections and proxies requests to other services.
+* [az-nginx](https://github.com/smashwilson/az-nginx): An [nginx](https://nginx.org/en/docs/) server that terminates incoming TLS connections and proxies requests to other services.
 
 ## Cron
 
 These containers are triggered on a schedule:
 
-* [azurefire-tls](https://github.com/smashwilson/azurefire-tls): Daily verification that the TLS certificate issued from [Let's Encrypt](https://letsencrypt.org/) is up to date. When expiration is near, acquire a new certificate with a DNS challenge and rebuild the infrastructure.
+* [az-tls](https://github.com/smashwilson/az-tls): Daily verification that the TLS certificate issued from [Let's Encrypt](https://letsencrypt.org/) is up to date. When expiration is near, acquire a new certificate with a DNS challenge and rebuild the infrastructure.
 
 ## Deployment
 
