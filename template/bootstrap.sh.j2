@@ -19,14 +19,16 @@ sudo timedatectl set-timezone UTC
 printf ">> Server timezone set.\n"
 
 printf ">> Downloading and extracting az-coordinator.\n"
-sudo curl --silent --location '{{ az_coordinator.download_url }}' --output /usr/local/bin/az-coordinator.tar.gz
-tar zxvf /usr/local/bin/az-coordinator.tar.gz
+sudo mkdir -p /usr/local/bin
+curl --silent --location '{{ az_coordinator.download_url }}' --output - |
+  sudo tar zxvf - -C /usr/local/bin az-coordinator
 sudo chown :core /usr/local/bin/az-coordinator
 sudo chmod ug+rx /usr/local/bin/az-coordinator
 printf ">> az-coordinator downloaded.\n"
 
 printf ">> Writing az-coordinator options.\n"
-sudo cat <<EOF >/etc/az-coordinator/options.json
+sudo mkdir -p /etc/az-coordinator
+cat <<EOF | sudo tee /etc/az-coordinator/options.json >/dev/null
 {{ az_coordinator.options_json }}
 EOF
 printf ">> az-coordinator options written.\n"
