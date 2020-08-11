@@ -105,6 +105,7 @@ def instance(context):
 
     info('waiting for instance {} to listen at {}:22'.format(
         context.instance.id, context.instance.public_ip_address))
+    _wait_for_connection(context.instance.public_ip_address, context.config.server_ssh_timeout)
     _wait_for_ssh(context.instance.public_ip_address, context.config.server_ssh_timeout)
     success('instance {} has booted and is listening at {}:22'.format(
         context.instance.id, context.instance.public_ip_address))
@@ -171,14 +172,36 @@ def bind_elastic_ip(context):
     )
     success('instance is associated with the elastic IP')
 
-def _wait_for_ssh(public_ip, attempts):
+def _wait_for_ssh(public_ip, timeout):
     """
-    Wait for an SSH daemon to begin listening at port 22.
+    Wait for an SSH daemon to successfully accept our private key.
+    """
+
+    for i in range(120):
+        ssh = [
+            'ssh',
+            '-i', os.path.join('secrets', 'id_rsa'),
+            '-o', 'StrictHostKeyChecking=no',
+            'core@{}'.format(public_ip),
+            'id'
+        ]
+        process = subprocess.run(ssh, timeout=timeout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        if process.returncode == 0:
+            return
+        else:
+            info("{}: timeout".format(i))
+            time.sleep(5)
+    raise RuntimeError('Timed out waiting for SSH key acceptance')
+
+def _wait_for_connection(public_ip, timeout):
+    """
+    Wait for the SSH daemon to begin listening and accepting connections on port 22.
     """
 
     for i in range(120):
         try:
-            s = socket.create_connection((public_ip, 22), 10)
+            s = socket.create_connection((public_ip, 22), timeout)
             s.shutdown(socket.SHUT_RDWR)
             s.close()
             return
@@ -188,4 +211,4 @@ def _wait_for_ssh(public_ip, attempts):
         except ConnectionRefusedError:
             info('{}: connection refused'.format(i))
             time.sleep(5)
-    raise RuntimeError('Timed out waiting for SSH daemon')
+    raise RuntimeError('Timed out waiting for SSH daemon connection')
