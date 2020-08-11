@@ -3,7 +3,11 @@
 set -euo pipefail
 
 printf ">> Trusting SSH keys.\n"
-curl --silent https://github.com/smashwilson.keys | sudo update-ssh-keys -u core -a smashwilson
+mkdir -p /home/core/.ssh
+touch /home/core/.ssh/authorized_keys
+curl --silent https://github.com/smashwilson.keys >> /home/core/.ssh/authorized_keys
+chmod 0700 /home/core/.ssh
+chmod 0600 /home/core/.ssh/authorized_keys
 printf ">> SSH keys trusted.\n"
 
 printf ">> Enabling Docker service.\n"
@@ -15,20 +19,20 @@ sudo timedatectl set-timezone UTC
 printf ">> Server timezone set.\n"
 
 printf ">> Downloading and extracting az-coordinator.\n"
-curl --silent --location '{{ az_coordinator.download_url }}' --output /home/core/az-coordinator.tar.gz
-tar zxvf /home/core/az-coordinator.tar.gz
-sudo mkdir -p /opt/bin/
-sudo mv /home/core/az-coordinator /opt/bin/az-coordinator
-sudo chown :core /opt/bin/az-coordinator
-sudo chmod ug+rx /opt/bin/az-coordinator
+sudo mkdir -p /usr/local/bin
+curl --silent --location '{{ az_coordinator.download_url }}' --output - |
+  sudo tar zxvf - -C /usr/local/bin az-coordinator
+sudo chown :core /usr/local/bin/az-coordinator
+sudo chmod ug+rx /usr/local/bin/az-coordinator
 printf ">> az-coordinator downloaded.\n"
 
 printf ">> Writing az-coordinator options.\n"
-cat <<EOF >/home/core/options.json
+sudo mkdir -p /etc/az-coordinator
+cat <<EOF | sudo tee /etc/az-coordinator/options.json >/dev/null
 {{ az_coordinator.options_json }}
 EOF
 printf ">> az-coordinator options written.\n"
 
 printf ">> Bootstrapping host.\n"
-sudo AZ_OPTIONS=/home/core/options.json az-coordinator -v init
+sudo /usr/local/bin/az-coordinator -v init
 printf ">> Host bootstrapped.\n"
