@@ -21,7 +21,8 @@ def template_payload(context):
         "master_key_id": context.config.coordinator_master_key_id,
         "aws_region": context.config.coordinator_aws_region,
         "docker_api_version": context.config.coordinator_docker_api_version,
-        "allowed_origin": context.config.coordinator_allowed_origin
+        "allowed_origin": context.config.coordinator_allowed_origin,
+        "slack_webhook_url": context.config.slack_webhook_url,
     }
     coordinator_options_json = json.dumps(coordinator_options, sort_keys=True, indent=2)
 
