@@ -15,7 +15,7 @@ fi
 if [ "${GITHUB_REF:-}" = "refs/heads/master" ]; then IMAGE_TAG=latest; else IMAGE_TAG="${SHORT_REF}"; fi
 
 printf "Authenticating to Docker registry.\n"
-docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY_URL}
+printf "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL}
 
 printf "Bulding Docker container (%s:%s).\n" "${IMAGE_NAME}" "${IMAGE_TAG}"
 docker build \
