@@ -9,7 +9,11 @@ fi
 
 SHORT_REF=$(basename ${GITHUB_REF})
 if [ -z "${IMAGE_NAME:-}" ]; then
-  IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
+  if [ -z "${DOCKER_REGISTRY_URL:-}"]; then
+    IMAGE_NAME="${GITHUB_REPOSITORY}"
+  else
+    IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
+  fi
 fi
 
 if [ "${GITHUB_REF:-}" = "refs/heads/main" ] || [ "${GITHUB_REF:-}" = "refs/heads/master" ]; then
@@ -19,7 +23,7 @@ else
 fi
 
 printf "Authenticating to Docker registry.\n"
-printf "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL}
+printf "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin "${DOCKER_REGISTRY_URL:-}"
 
 printf "Bulding Docker container (%s:%s).\n" "${IMAGE_NAME}" "${IMAGE_TAG}"
 docker build \
