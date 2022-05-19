@@ -12,7 +12,11 @@ if [ -z "${IMAGE_NAME:-}" ]; then
   IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
 fi
 
-if [ "${GITHUB_REF:-}" = "refs/heads/master" ]; then IMAGE_TAG=latest; else IMAGE_TAG="${SHORT_REF}"; fi
+if [ "${GITHUB_REF:-}" = "refs/heads/main" ] || [ "${GITHUB_REF:-}" = "refs/heads/master" ]; then
+  IMAGE_TAG=latest
+else
+  IMAGE_TAG="${SHORT_REF}"
+fi
 
 printf "Authenticating to Docker registry.\n"
 printf "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL}
