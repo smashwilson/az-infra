@@ -9,7 +9,7 @@ fi
 
 SHORT_REF=$(basename ${GITHUB_REF})
 if [ -z "${IMAGE_NAME:-}" ]; then
-  if [ -z "${DOCKER_REGISTRY_URL:-}"]; then
+  if [ -z "${DOCKER_REGISTRY_URL:-}" ]; then
     IMAGE_NAME="${GITHUB_REPOSITORY}"
   else
     IMAGE_NAME=${DOCKER_REGISTRY_URL}/${GITHUB_REPOSITORY}
