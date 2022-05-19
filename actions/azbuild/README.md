@@ -1,6 +1,6 @@
 # azbuild
 
-This is a GitHub action to build and push specialized Docker containers to [quay.io](https://quay.io). It tags and pushes the built container image with a suffix matching the current git ref, with the exception that `master` becomes `latest`.
+This is a GitHub action to build and push specialized Docker containers to [DockerHub](https://hub.docker.com). It tags and pushes the built container image with a suffix matching the current git ref, with the exception that `main` or `master` become `latest`.
 
 | Environment variable | Description |
 | --- | --- |
