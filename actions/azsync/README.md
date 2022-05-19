@@ -1,6 +1,6 @@
 # azsync
 
-This is a GitHub action to build and push specialized Docker containers to [quay.io](https://quay.io). It tags and pushes the built container image with a suffix matching the current git ref, with the exception that `master` becomes `latest`.
+This is a GitHub action to trigger the [Azurefire coordinator](https://github.com/smashwilson/az-coordinator) to perform a synchronization action, which will pull the latest container images and restart any running containers that have changed.
 
 | Environment variable | Description |
 | --- | --- |
