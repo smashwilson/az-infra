@@ -5,4 +5,8 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 export PYTHONPATH=.
 
+if [ -f credentials.sh ]; then
+  source credentials.sh
+fi
+
 python -m provision
