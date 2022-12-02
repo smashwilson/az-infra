@@ -15,7 +15,7 @@ jobs:
     - name: setup python
       uses: actions/setup-python@v3
       with:
-        python-version: 3.6
+        python-version: 3.11.0
     - name: install dependencies
       run: pip install -r requirements.txt
     - name: test
