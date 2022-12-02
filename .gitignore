@@ -5,3 +5,4 @@ credentials.md
 !/*.example.ps1
 !/*.example.sh
 out/
+__pycache__
